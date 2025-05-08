@@ -1,6 +1,6 @@
 # FERREMAS - Sistema de Consulta RESTful para Red de Ferreterías
 
-FERREMAS es un proyecto semestral desarrollado para la asignatura **Integración de Plataformas** en el instituto **Duoc UC**. Este sistema simula la solución tecnológica de una red de ferreterías con múltiples sucursales físicas, enfocándose principalmente en la integración de plataformas mediante **APIs RESTful** construidas en **Java con Spring Boot**.
+FERREMAS es un proyecto semestral desarrollado para la asignatura **Integración de Plataformas**. Este sistema simula la solución tecnológica de una red de ferreterías con múltiples sucursales físicas, enfocándose principalmente en la integración de plataformas mediante **APIs RESTful** construidas en **Java con Spring Boot**.
 
 ## :dart: Contexto
 

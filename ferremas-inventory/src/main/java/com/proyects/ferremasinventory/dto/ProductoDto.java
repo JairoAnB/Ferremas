@@ -19,39 +19,28 @@ public class ProductoDto {
     //Notblank, NotNull son para validar los datos que se van a recibir
     //Hay que tener cuenta la redudancia entre las validaciones
 
-    @JsonProperty("Codigo del producto")
-    @NotBlank(message = "El codigo del producto no puede estar vacio")
-    private String codigoProducto;
 
-    @JsonProperty("Marca")
     @NotBlank
     private String marca;
 
-    @JsonProperty("Codigo")
-    @NotBlank(message = "El codigo no puede estar vacio")
+    @NotBlank
     private String codigo;
 
-    @NotBlank(message = "El nombre no puede estar vacio")
-    @JsonProperty("Nombre")
+    @NotBlank
     private String nombre;
 
-    @NotNull(message = "El precio no puede ser nulo")
-    @JsonProperty("Precio del producto")
+    @NotNull
     private int precio;
 
-    @NotNull(message = "El stock no puede ser nulo")
-    @JsonProperty("Stock")
+    @NotNull
     private int stock;
 
-    @JsonProperty("Descripcion")
     private String descripcion;
 
-    @NotNull(message = "El id de la categoria no puede ser nulo")
-    @JsonProperty("Id de la categoria")
+    @NotNull
+    @JsonProperty("categoria_id")
     private Long categoriaId;
 
-    @NotNull(message = "La fecha de creacion no puede ser nula")
-    @JsonProperty("Fecha de creacion")
+    @JsonProperty("fecha_creacion")
     private LocalDate fechaCreacion;
-
 }

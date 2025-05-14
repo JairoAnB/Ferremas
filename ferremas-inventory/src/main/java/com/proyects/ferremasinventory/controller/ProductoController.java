@@ -1,6 +1,8 @@
 package com.proyects.ferremasinventory.controller;
 
+import com.proyects.ferremasinventory.dto.ProductoCreateDto;
 import com.proyects.ferremasinventory.dto.ProductoDto;
+import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
 import com.proyects.ferremasinventory.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/products")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -36,17 +38,17 @@ public class ProductoController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createProducto(@Valid @RequestBody ProductoDto productoDto){
+    public ResponseEntity<String> createProducto(@Valid @RequestBody ProductoCreateDto productoCreateDtoDto) {
 
-        productoService.createProducto(productoDto);
+        productoService.createProducto(productoCreateDtoDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body("El producto fue creado correctamente.");
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateProducto(@Valid @PathVariable Long id, @RequestBody ProductoDto productoDto) {
-        productoService.updateProducto(id, productoDto);
+    public ResponseEntity<String> updateProducto(@Valid @PathVariable Long id, @RequestBody ProductoUpdateDto productoUpdateDto) {
+        productoService.updateProducto(id, productoUpdateDto);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

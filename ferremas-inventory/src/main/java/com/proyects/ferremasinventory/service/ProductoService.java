@@ -1,7 +1,9 @@
 package com.proyects.ferremasinventory.service;
 
 
+import com.proyects.ferremasinventory.dto.ProductoCreateDto;
 import com.proyects.ferremasinventory.dto.ProductoDto;
+import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
 import com.proyects.ferremasinventory.exeptions.ProductoNoActualizado;
 import com.proyects.ferremasinventory.exeptions.ProductoNoCreado;
 import com.proyects.ferremasinventory.exeptions.ProductoNoEliminado;
@@ -9,7 +11,6 @@ import com.proyects.ferremasinventory.exeptions.ProductoNoEncontrado;
 import com.proyects.ferremasinventory.mapper.ProductoMapper;
 import com.proyects.ferremasinventory.model.Producto;
 import com.proyects.ferremasinventory.repository.ProductoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,11 +59,11 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<ProductoDto> createProducto(ProductoDto productoDto){
+    public ResponseEntity<ProductoDto> createProducto(ProductoCreateDto productoCreateDtoDto){
 
         try{
             //Paso el DTO recibido a una entidad del modelo Producto
-            Producto productoEntity = productoMapper.toEntity(productoDto);
+            Producto productoEntity = productoMapper.productoCreatetoEntity(productoCreateDtoDto);
 
             productoEntity.setFechaCreacion(LocalDate.now());
 
@@ -81,21 +82,20 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<ProductoDto> updateProducto(Long id, ProductoDto productoDto){
+    public ResponseEntity<ProductoDto> updateProducto(Long id, ProductoUpdateDto productoUpdateDto){
 
         //Busco el producto existente en la base de datos
         Producto productoExistente = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
 
         try{
-            productoExistente.setCodigo(productoDto.getCodigo());
-            productoExistente.setNombre(productoDto.getNombre());
-            productoExistente.setMarca(productoDto.getMarca());
-            productoExistente.setPrecio(productoDto.getPrecio());
-            productoExistente.setStock(productoDto.getStock());
-            productoExistente.setDescripcion(productoDto.getDescripcion());
-            productoExistente.setCategoriaId(productoDto.getCategoriaId());
-            productoExistente.setFechaCreacion(productoDto.getFechaCreacion());
+            productoExistente.setNombre(productoUpdateDto.getNombre());
+            productoExistente.setMarca(productoUpdateDto.getMarca());
+            productoExistente.setPrecio(productoUpdateDto.getPrecio());
+            productoExistente.setStock(productoUpdateDto.getStock());
+            productoExistente.setDescripcion(productoUpdateDto.getDescripcion());
+            productoExistente.setCategoriaId(productoUpdateDto.getCategoriaId());
+            productoExistente.setFechaCreacion(productoUpdateDto.getFechaCreacion());
 
 
             //Guardo la entidad actualizada en la base de datos

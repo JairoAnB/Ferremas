@@ -1,4 +1,4 @@
-package com.proyects.ferremasinventory.exeptions;
+package com.proyects.ferremasinventory.exceptions;
 
 
 import org.springframework.http.HttpStatus;
@@ -30,6 +30,12 @@ public class ControllerHandler {
     @ExceptionHandler(ProductoNoCreado.class)
     public ResponseEntity<ExceptionMessage> manejarProductoNoCreado(ProductoNoCreado ex) {
         ExceptionMessage error = new ExceptionMessage(ex.getMessage(), "Ocurrio un error al intentar crear el producto, por favor intenta nuevamente");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CategoriaNoEncontrada.class)
+    public ResponseEntity<ExceptionMessage> manejarCategoriaNoEncontrada(CategoriaNoEncontrada ex) {
+        ExceptionMessage error = new ExceptionMessage(ex.getMessage(), "La categoria no fue encontrada, Revise la id e intente nuevamente o cree una nueva categoria");
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 }

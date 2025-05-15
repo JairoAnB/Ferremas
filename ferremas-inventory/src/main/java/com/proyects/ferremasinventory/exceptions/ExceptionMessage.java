@@ -1,4 +1,4 @@
-package com.proyects.ferremasinventory.exeptions;
+package com.proyects.ferremasinventory.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

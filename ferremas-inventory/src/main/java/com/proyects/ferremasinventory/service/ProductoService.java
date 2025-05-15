@@ -1,16 +1,18 @@
 package com.proyects.ferremasinventory.service;
 
 
+import com.proyects.ferremasinventory.dto.CategoriaRequestDto;
 import com.proyects.ferremasinventory.dto.ProductoCreateDto;
 import com.proyects.ferremasinventory.dto.ProductoDto;
 import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
-import com.proyects.ferremasinventory.exeptions.ProductoNoActualizado;
-import com.proyects.ferremasinventory.exeptions.ProductoNoCreado;
-import com.proyects.ferremasinventory.exeptions.ProductoNoEliminado;
-import com.proyects.ferremasinventory.exeptions.ProductoNoEncontrado;
+import com.proyects.ferremasinventory.exceptions.ProductoNoActualizado;
+import com.proyects.ferremasinventory.exceptions.ProductoNoCreado;
+import com.proyects.ferremasinventory.exceptions.ProductoNoEliminado;
+import com.proyects.ferremasinventory.exceptions.ProductoNoEncontrado;
 import com.proyects.ferremasinventory.mapper.ProductoMapper;
 import com.proyects.ferremasinventory.model.Producto;
 import com.proyects.ferremasinventory.repository.ProductoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,10 +26,13 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
     private final ProductoMapper productoMapper;
+    private final CategoriaClient categoriaClient;
 
-    public ProductoService(ProductoRepository productoRepository, ProductoMapper productoMapper) {
+    @Autowired
+    public ProductoService(ProductoRepository productoRepository, ProductoMapper productoMapper, CategoriaClient categoriaClient) {
         this.productoRepository = productoRepository;
         this.productoMapper = productoMapper;
+        this.categoriaClient = categoriaClient;
     }
 
     // Método para buscar todos los productos
@@ -59,11 +64,13 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<ProductoDto> createProducto(ProductoCreateDto productoCreateDtoDto){
+    public ResponseEntity<ProductoDto> createProducto(ProductoCreateDto productoCreateDto){
+
+        ResponseEntity<CategoriaRequestDto> categoria = categoriaClient.validarCategoria(productoCreateDto.getCategoriaId());
 
         try{
             //Paso el DTO recibido a una entidad del modelo Producto
-            Producto productoEntity = productoMapper.productoCreatetoEntity(productoCreateDtoDto);
+            Producto productoEntity = productoMapper.productoCreatetoEntity(productoCreateDto);
 
             productoEntity.setFechaCreacion(LocalDate.now());
 

@@ -3,6 +3,7 @@ package com.proyects.ferremasinventory.controller;
 import com.proyects.ferremasinventory.dto.ProductoCreateDto;
 import com.proyects.ferremasinventory.dto.ProductoDto;
 import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
+import com.proyects.ferremasinventory.dto.ProductoUpdateStockDto;
 import com.proyects.ferremasinventory.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,16 @@ public class ProductoController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("El producto fue actualizado correctamente.");
+    }
+
+    @PutMapping("/stock/{id}/update/{stock}")
+    public ResponseEntity<ProductoUpdateStockDto> updateStock(@PathVariable Long id, @PathVariable int stock) {
+        return productoService.updateStock(id, stock);
+    }
+
+    @GetMapping("/stock/{id}")
+    public ResponseEntity<ProductoUpdateStockDto> getStock(@PathVariable Long id) {
+        return productoService.findProductosStockById(id);
     }
 
     @DeleteMapping("/delete/{id}")

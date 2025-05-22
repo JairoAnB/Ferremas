@@ -1,10 +1,7 @@
 package com.proyects.ferremasinventory.service;
 
 
-import com.proyects.ferremasinventory.dto.CategoriaRequestDto;
-import com.proyects.ferremasinventory.dto.ProductoCreateDto;
-import com.proyects.ferremasinventory.dto.ProductoDto;
-import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
+import com.proyects.ferremasinventory.dto.*;
 import com.proyects.ferremasinventory.exceptions.ProductoNoActualizado;
 import com.proyects.ferremasinventory.exceptions.ProductoNoCreado;
 import com.proyects.ferremasinventory.exceptions.ProductoNoEliminado;
@@ -132,5 +129,39 @@ public class ProductoService {
         } catch (Exception e) {
             throw new ProductoNoEliminado("El producto con la id " + id + " no fue eliminado");
         }
+    }
+
+    @Transactional
+    public ResponseEntity<ProductoUpdateStockDto> updateStock(Long id, int stock){
+        Producto productoExistente = productoRepository.findById(id)
+                .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
+        try{
+
+            //Actualizo el stock del producto
+            productoExistente.setStock(stock);
+            //Guardo la entidad actualizada en la base de datos
+            Producto entidadActualizada = productoRepository.save(productoExistente);
+            //Paso la entidad actualizada a DTO
+            ProductoUpdateStockDto productoActualizado = productoMapper.toDtoStock(entidadActualizada);
+
+            //Retorno el DTO actualizado, con el status de OK
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(productoActualizado);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    @Transactional(readOnly = true)
+    public ResponseEntity<ProductoUpdateStockDto> findProductosStockById(Long id){
+        Producto productoExistente = productoRepository.findById(id)
+                .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
+
+        ProductoUpdateStockDto ProductoStockDtos = productoMapper.toDtoStock(productoExistente);
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ProductoStockDtos);
     }
 }

@@ -4,6 +4,7 @@ package com.proyects.ferremasinventory.mapper;
 import com.proyects.ferremasinventory.dto.ProductoCreateDto;
 import com.proyects.ferremasinventory.dto.ProductoDto;
 import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
+import com.proyects.ferremasinventory.dto.ProductoUpdateStockDto;
 import com.proyects.ferremasinventory.model.Producto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -80,4 +81,12 @@ public interface ProductoMapper {
             @Mapping(source = "fechaCreacion", target = "fechaCreacion")
     })
     Producto productoUpdatetoEntity(ProductoUpdateDto productoUpdateDto);
+
+    Producto toEntityStock(ProductoUpdateStockDto productoUpdateStockDto);
+
+    ProductoUpdateStockDto toDtoStock(Producto producto);
+
+    List<ProductoUpdateStockDto> toDtoStockList(List<Producto> productos);
+
+
 }

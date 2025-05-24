@@ -26,6 +26,9 @@ public class Producto {
     private String descripcion;
     private String marca;
     private int stock;
+
+    @Column(name = "stock_bodega")
+    private int stockBodega;
     private int precio;
 
     @Column(name = "fecha_creacion")

@@ -8,6 +8,8 @@ import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.responses.WebpayPlusTransactionCommitResponse;
 import com.proyects.ferremaspayment.dto.TransaccionResponseDto;
 import com.proyects.ferremaspayment.dto.VentaDto;
+import com.proyects.ferremaspayment.exceptions.ErrorWebpayConfirmarPago;
+import com.proyects.ferremaspayment.exceptions.ErrorWebpayTransaccion;
 import com.proyects.ferremaspayment.model.DetalleVenta;
 import com.proyects.ferremaspayment.model.Estado;
 import com.proyects.ferremaspayment.model.Venta;
@@ -15,7 +17,6 @@ import com.proyects.ferremaspayment.repository.VentaRepository;
 import com.proyects.ferremaspayment.service.PaymentClient;
 import com.proyects.ferremaspayment.service.PaymentGateway;
 import com.proyects.ferremaspayment.service.VentaService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -48,33 +49,39 @@ public class VentaController {
     @GetMapping("/pago")
     public String iniciarPago(Model model, @RequestParam Long id){
 
+        try {
+            ResponseEntity<VentaDto> venta = ventaService.findVentaById(id);
 
-        ResponseEntity<VentaDto> venta = ventaService.findVentaById(id);
+            VentaDto ventaResponse = venta.getBody();
 
-        VentaDto ventaResponse = venta.getBody();
+            System.out.println(ventaResponse);
 
-        System.out.println(ventaResponse);
+            int amount = ventaResponse.getTotal();
+            String buyOrder = ventaResponse.getBuyOrder();
+            String sessionId = ventaResponse.getId().toString();
+            System.out.println( "monto " + amount);
+            String returnUrl = "http://localhost:8085/pago/confirmacion";
 
+            TransaccionResponseDto response = paymentGateway.iniciarTransaccion( sessionId,buyOrder,returnUrl, amount);
 
+            DecimalFormat formato = new DecimalFormat("#,###");
+            String montoFormateado = formato.format(amount);
 
-        String buyOrder = ventaResponse.getBuyOrder();
-        String sessionId = ventaResponse.getId().toString();
-        int amount = ventaResponse.getTotal();
-        String returnUrl = "http://localhost:8085/pago/confirmacion";
+            model.addAttribute("urlPago", response.getUrl());
+            model.addAttribute("token", response.getToken());
+            model.addAttribute("monto", montoFormateado);
+            model.addAttribute("ventaId", ventaResponse.getId());
+            model.addAttribute("cambio", ventaResponse.getMoneda());
 
-        TransaccionResponseDto response = paymentGateway.iniciarTransaccion( buyOrder, sessionId, returnUrl, amount);
+            System.out.println(response.getUrl());
+            System.out.println(response.getToken());
 
-        DecimalFormat formato = new DecimalFormat("#,###");
-        String montoFormateado = formato.format(amount);
+            return "pago";
 
-        model.addAttribute("urlPago", response.getUrl());
-        model.addAttribute("token", response.getToken());
-        model.addAttribute("monto", montoFormateado);
+        } catch (Exception e) {
+            throw new ErrorWebpayTransaccion("Error al iniciar la transacción, verifique los datos ingresados");
+        }
 
-        System.out.println(response.getUrl());
-        System.out.println(response.getToken());
-
-        return "pago";
     }
 
 
@@ -82,10 +89,9 @@ public class VentaController {
     public String confirmarPago(@RequestParam("token_ws") String token, Model model){
 
         try{
-
-            WebpayPlus.Transaction tx = new WebpayPlus.Transaction(
-                    new WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST)
-            );
+                WebpayPlus.Transaction tx = new WebpayPlus.Transaction(
+                        new WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST)
+                );
 
             WebpayPlusTransactionCommitResponse response = tx.commit(token);
 
@@ -104,24 +110,23 @@ public class VentaController {
 
                         paymentClient.actualizarStock(ventasDetalle.getProductoId(), ventasDetalle.getCantidad());
                     }
-                    venta.setEstado(Estado.ACEPTADA);
+                    venta.setEstado(Estado.COMPLETADA);
                     ventaRepository.save(venta);
-                    model.addAttribute("confirmado", "transaccion confirmada");
-                    return "pago-completado";
+
+                    return "webpay/pago-completado";
                 }else {
-                    model.addAttribute("rechazado", "transaccion rechazada");
-                    venta.setEstado(Estado.DENEGADA);
+
+                    venta.setEstado(Estado.CANCELADA);
                     ventaRepository.save(venta);
-                    return "/pago-rechazado";
+                    return "webpay/pago-rechazado";
                 }
             }else {
-                model.addAttribute("error", "No se encontró la venta");
-                return "/pago-error";
+                return "webpay/pago-error";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new ErrorWebpayConfirmarPago("Error al procesar la transacción y confirmar el pago");
 
         }
 

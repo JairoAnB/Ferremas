@@ -1,17 +1,16 @@
 package com.proyects.ferremaspayment.service;
 
+import com.proyects.ferremaspayment.dto.CurrencyDto;
 import com.proyects.ferremaspayment.dto.InventoryRequestDto;
 import com.proyects.ferremaspayment.dto.ProductoDto;
+import com.proyects.ferremaspayment.dto.UsuarioRequestDto;
+import com.proyects.ferremaspayment.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class PaymentClient {
@@ -25,7 +24,7 @@ public class PaymentClient {
 
     public ResponseEntity<InventoryRequestDto> actualizarStock(Long id, int cantidad){
 
-        String inventoryUrl = "http://localhost:8082/api/products/stock/" + id;
+        String inventoryUrl = "http://localhost:8082/api/v1/products/stock/" + id;
 
         try{
 
@@ -39,7 +38,7 @@ public class PaymentClient {
 
                 int stockActualizado = inventoryRequestDto.getStock() - cantidad;
 
-                String updateUrl = "http://localhost:8082/api/products/stock/" + id + "/update/" + stockActualizado;
+                String updateUrl = "http://localhost:8082/api/v1/products/stock/" + id + "/update/" + stockActualizado;
 
                 try{
                     ResponseEntity<InventoryRequestDto> updateResponse = restTemplate.exchange(
@@ -57,23 +56,23 @@ public class PaymentClient {
 
                 }catch (Exception e){
                     e.printStackTrace();
-                    throw new RuntimeException("Error al actualizar el stock del producto con id " + id);
+                    throw new StockNoActualizado("No se pudo actualizar el stock del producto con la id " + id);
                 }
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(response.getBody());
             }else {
-                throw new RuntimeException("El producto con la id " + id + " no existe");
+                throw new ProductoNoExiste("El producto con la id " + id + " no existe");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new ErrorAlActualizar("No se pudo actualizar el stock, Por favor intente nuevamente");
         }
     }
 
 
-    public boolean validarStock(Long id){
-        String inventoryUrl = "http://localhost:8082/api/products/stock/" + id;
+    public boolean validarStock(Long id, int cantidad){
+        String inventoryUrl = "http://localhost:8082/api/v1/products/stock/" + id;
 
         try{
 
@@ -84,22 +83,24 @@ public class PaymentClient {
 
                 InventoryRequestDto inventoryRequestDto = response.getBody();
 
-                if(inventoryRequestDto.getStock() <= 0){
+
+                if(inventoryRequestDto.getStock() < cantidad){
                     return false;
                 }
+
                 return true;
             }else {
-                throw new RuntimeException("El producto con la id " + id + " no existe");
+                throw new ProductoNoExiste("El producto con la id " + id + " no existe");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new StockNoActualizado("No se pudo actualizar el stock del producto con la id, revisa la solicitud ");
         }
     }
 
     public ProductoDto obtenerProductos(Long id){
 
-        String inventoryUrlProducts = "http://localhost:8082/api/products/" + id;
+        String inventoryUrlProducts = "http://localhost:8082/api/v1/products/" + id;
 
         try{
 
@@ -108,8 +109,49 @@ public class PaymentClient {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new ProductoNoObtenido("No se pudo obtener el producto con la id " + id);
         }
     }
+
+    public CurrencyDto obtenerCambio(String moneda, String fecha){
+
+        String currencyUrl = "https://mindicador.cl/api/" + moneda + "/" + fecha;
+
+        try{
+
+            CurrencyDto currencyDto = restTemplate.getForObject(currencyUrl, CurrencyDto.class);
+            return currencyDto;
+
+
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw new CambioNoValido("No se pudo obtener el cambio de la moneda");
+        }
+
+    }
+
+    public UsuarioRequestDto obtenerUsuario(Long id){
+
+        String userUrl = "http://localhost:8086/api/v1/users/" + id;
+
+        try{
+
+            ResponseEntity<UsuarioRequestDto> response =
+                    restTemplate.getForEntity(userUrl, UsuarioRequestDto.class);
+
+            if(response.getStatusCode().is2xxSuccessful() && response.getBody() != null){
+
+                UsuarioRequestDto usuarios = response.getBody();
+                return usuarios;
+
+            }else {
+                throw new UsuarioNoEncontrado("El usuario con la id " + id + " no existe");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new UsuarioNoEncontrado("El usuario con la id " + id + " no existe");
+        }
+    }
+
 
 }

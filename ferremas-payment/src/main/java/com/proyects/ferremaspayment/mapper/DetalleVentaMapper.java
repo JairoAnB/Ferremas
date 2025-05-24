@@ -17,11 +17,11 @@ public interface DetalleVentaMapper {
     ItemVentaDto toItemVentaDto(DetalleVentaDto detalleVentaDto);
 
     @Mapping(source = "nombreProducto", target = "nombre")
-    @Mapping(source = "subtotal", target = "subTotal")
+    @Mapping(source = "subTotal", target = "subTotal")
     DetalleVentaDto toDto(DetalleVenta detalleVenta);
 
     @Mapping(source = "nombre", target = "nombreProducto")
-    @Mapping(source = "subTotal", target = "subtotal")
+    @Mapping(source = "subTotal", target = "subTotal")
     DetalleVenta toEntity(DetalleVentaDto detalleVentaDto);
 
     List<DetalleVentaDto> toDtoList(List<DetalleVenta> detalleVentas);

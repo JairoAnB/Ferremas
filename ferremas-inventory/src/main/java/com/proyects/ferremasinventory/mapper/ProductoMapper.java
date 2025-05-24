@@ -1,10 +1,7 @@
 package com.proyects.ferremasinventory.mapper;
 
 
-import com.proyects.ferremasinventory.dto.ProductoCreateDto;
-import com.proyects.ferremasinventory.dto.ProductoDto;
-import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
-import com.proyects.ferremasinventory.dto.ProductoUpdateStockDto;
+import com.proyects.ferremasinventory.dto.*;
 import com.proyects.ferremasinventory.model.Producto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -66,6 +63,7 @@ public interface ProductoMapper {
             @Mapping(source = "nombre", target = "nombre"),
             @Mapping(source = "precio", target = "precio"),
             @Mapping(source = "stock", target = "stock"),
+            @Mapping(source = "stockBodega", target = "stockBodega"),
             @Mapping(source = "descripcion", target = "descripcion"),
             @Mapping(source = "categoriaId", target = "categoriaId"),
     })
@@ -88,5 +86,8 @@ public interface ProductoMapper {
 
     List<ProductoUpdateStockDto> toDtoStockList(List<Producto> productos);
 
+    ProductoInventoryDto toInventoryDto(Producto producto);
+
+    List<ProductoInventoryDto> toInventoryDtoList(List<Producto> productos);
 
 }

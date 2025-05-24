@@ -1,16 +1,24 @@
 package com.proyects.ferremaspayment.dto;
 
-import com.proyects.ferremaspayment.model.Venta;
+import com.proyects.ferremaspayment.model.Estado;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.time.LocalDateTime;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class VentaResponseDto {
 
-    public Venta venta;
-    public String token;
-    public String url;
+    private Long id;
+    private Long usuarioId;
+    private String buyOrder;
+    private String metodoPago;
+    private String moneda;
+    private Estado estado;
+    private int total;
+    private LocalDateTime fechaVenta;
 }

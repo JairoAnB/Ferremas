@@ -1,5 +1,5 @@
 package com.proyects.ferremaspayment.model;
 
 public enum Estado {
-    PENDIENTE, DENEGADA, ACEPTADA
+    EN_PROCESO, DENEGADO, COMPLETADA, CANCELADA
 }

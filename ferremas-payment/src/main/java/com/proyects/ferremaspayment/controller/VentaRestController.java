@@ -9,6 +9,7 @@ import cl.transbank.webpay.webpayplus.responses.WebpayPlusTransactionCommitRespo
 import com.proyects.ferremaspayment.dto.TransaccionResponseDto;
 import com.proyects.ferremaspayment.dto.VentaDto;
 import com.proyects.ferremaspayment.dto.VentaRequestDto;
+import com.proyects.ferremaspayment.dto.VentaResponseDto;
 import com.proyects.ferremaspayment.model.Estado;
 import com.proyects.ferremaspayment.model.Venta;
 import com.proyects.ferremaspayment.repository.VentaRepository;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1/sales")
 public class VentaRestController {
 
     private final VentaService ventaService;
@@ -42,16 +43,8 @@ public class VentaRestController {
 
     @Transactional
     @PostMapping("/create")
-    public ResponseEntity<VentaDto> createVenta(@RequestBody VentaRequestDto ventaRequestDto, HttpSession session){
-
-        ResponseEntity<VentaDto> response = ventaService.createVenta(ventaRequestDto);
-
-        VentaDto ventaResponse = response.getBody();
-        System.out.println(ventaResponse);
-
-        session.setAttribute("ventaId", ventaResponse.getId());
-
-        return response;
+    public ResponseEntity<String> createVenta(@RequestBody VentaRequestDto ventaRequestDto){
+        return ventaService.createVenta(ventaRequestDto);
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +52,10 @@ public class VentaRestController {
     public ResponseEntity<VentaDto> getVentaById(@PathVariable Long id) {
         return ventaService.findVentaById(id);
     }
+
     @Transactional(readOnly = true)
     @GetMapping
-    public ResponseEntity<List<VentaDto>> getAllVentas() {
+    public ResponseEntity<List<VentaResponseDto>> getAllVentas() {
         return ventaService.findAllVentas();
     }
 

@@ -18,10 +18,10 @@ public class CategoriaClient {
         this.restTemplate = restTemplate;
     }
 
-    String url = "http://localhost:8081/api/categories";
+    String url = "http://localhost:8081/api/v1/categories";
 
     public ResponseEntity<CategoriaRequestDto> validarCategoria(Long id){
-        String url = "http://localhost:8081/api/categories/" + id;
+        String url = "http://localhost:8081/api/v1/categories/" + id;
 
         try{
 

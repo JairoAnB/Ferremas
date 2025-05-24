@@ -88,119 +88,84 @@
             border-radius: 8px;
         }
 
-        .payment-method-selector {
+        .international-check {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            animation: fadeIn 1s ease 0.8s forwards;
+            opacity: 0;
+        }
+
+        .international-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .international-check label {
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .payment-methods {
             margin: 20px 0;
             animation: fadeIn 1s ease 1s forwards;
             opacity: 0;
         }
 
-        .select-method-button {
-            background-color: #f8f9fa;
-            color: #333;
-            border: 2px solid #ddd;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .payment-method-tabs {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin: 0 auto 15px;
-            max-width: 300px;
-            width: 100%;
-        }
-
-        .select-method-button:hover {
-            border-color: #0075c9;
-            background-color: #f0f8ff;
-        }
-
-        .select-method-button.selected {
-            border-color: #0075c9;
-            background-color: #f0f8ff;
-        }
-
-        .method-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 12px;
-            color: #666;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .dropdown-arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .dropdown-arrow.open {
-            transform: rotate(180deg);
-        }
-
-        .payment-methods-dropdown {
-            background-color: white;
-            border: 1px solid #ddd;
+        .payment-tab {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            max-width: 300px;
-            margin: 0 auto;
-            overflow: hidden;
-            max-height: 0;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .payment-methods-dropdown.open {
-            max-height: 400px;
-            opacity: 1;
-        }
-
-        .payment-method-option {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .payment-method-option:last-child {
-            border-bottom: none;
-        }
-
-        .payment-method-option:hover {
+            transition: all 0.3s ease;
             background-color: #f8f9fa;
+            font-weight: bold;
+            color: #666;
+            flex: 1;
+            max-width: 150px;
         }
 
-        .payment-method-option.selected {
+        .payment-tab:hover {
+            border-color: #0075c9;
+            background-color: #f0f8ff;
+        }
+
+        .payment-tab.active {
+            border-color: #0075c9;
             background-color: #e3f2fd;
             color: #0075c9;
         }
 
-        .method-logo {
-            width: 40px;
-            height: 30px;
-            border-radius: 4px;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #666;
-            border: 1px solid #ddd;
-            overflow: hidden;
+        .payment-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #ddd;
+            background-color: #f5f5f5;
         }
 
-        .method-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .payment-form {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .payment-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
         }
 
         .payment-button {
@@ -220,6 +185,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 300px;
             opacity: 1;
+            width: 100%;
         }
 
         .payment-button:disabled {
@@ -272,6 +238,32 @@
             margin: 15px 0;
             animation: fadeIn 1s ease 0.6s forwards, highlight 2s ease 1.5s;
             opacity: 0;
+        }
+
+        .payment-logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .paypal-logo {
+            color: #0070ba;
+        }
+
+        .paypal-logo span:first-child {
+            color: #0070ba;
+        }
+
+        .paypal-logo span:last-child {
+            color: #003087;
+        }
+
+        .webpay-logo {
+            color: #0075c9;
         }
 
         @keyframes slideUp {
@@ -362,43 +354,56 @@
     <h1>Finaliza tu Compra</h1>
     <p>Estás a un paso de completar tu transacción. Selecciona tu método de pago preferido.</p>
 
-    <div class="amount-display">
+    <div class="amount-display" th:switch="${cambio}">
         $ <strong th:text="${monto}"></strong>
     </div>
 
-    <div class="payment-method-selector">
-        <button class="select-method-button" id="methodSelector">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="method-icon" id="selectedIcon">?</div>
-                <span id="selectedMethod">Selecciona método de pago</span>
-            </div>
-            <svg class="dropdown-arrow" id="dropdownArrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
+    <div class="international-check">
+        <input type="checkbox" id="internationalCheckbox">
+        <label for="internationalCheckbox">Esta es una compra internacional</label>
+    </div>
 
-        <div class="payment-methods-dropdown" id="methodsDropdown">
-            <div class="payment-method-option" data-method="webpay">
-                <div class="method-logo">
-                    <!-- Aquí puedes agregar la imagen de Webpay -->
-                    <img src="/images/1.WebpayPlus_FB_80px%20(1).svg" alt="Webpay">
-                </div>
-                <span>Webpay Plus</span>
+    <div class="payment-methods">
+        <div class="payment-method-tabs">
+            <div class="payment-tab active" id="webpayTab" data-method="webpay">Webpay</div>
+            <div class="payment-tab" id="paypalTab" data-method="paypal">PayPal</div>
+        </div>
+
+        <!-- Formulario de Webpay -->
+        <div class="payment-form active" id="webpayForm">
+            <div class="payment-logo webpay-logo">Webpay Plus</div>
+            <form th:action="${token}" method="post">
+                <input type="hidden" name="token_ws" th:value="${urlPago}" />
+                <button class="payment-button" type="submit">
+                    <svg class="payment-icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#0075c9" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1z"/>
+                        <circle fill="#00ab4e" cx="17" cy="18" r="4"/>
+                        <path fill="white" d="M15 18l1.5 1.5 3-3-1-1-2 2-0.5-0.5z"/>
+                    </svg>
+                    Pagar con Webpay
+                </button>
+            </form>
+        </div>
+
+        <!-- Formulario de PayPal -->
+        <div class="payment-form" id="paypalForm">
+            <div class="payment-logo paypal-logo">
+                <span>Pay</span><span>Pal</span>
             </div>
+            <form action="/paypal/create" method="post">
+                <input type="hidden" name="ventaId" th:value="${ventaId}">
+                <button class="payment-button" type="submit">
+                    <svg class="payment-icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#0070ba" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1z"/>
+                        <circle fill="#003087" cx="17" cy="18" r="4"/>
+                        <path fill="white" d="M15 18l1.5 1.5 3-3-1-1-2 2-0.5-0.5z"/>
+                    </svg>
+                    Pagar con PayPal
+                </button>
+            </form>
         </div>
     </div>
-    <form th:action="${token}" method="post">
-        <input type="hidden" name="token_ws" th:value="${urlPago}" />
-        <button class="payment-button" id="finalizeButton" disabled onclick="handlePayment()">
-            <svg class="payment-icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#0075c9" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1z"/>
-                <circle fill="#00ab4e" cx="17" cy="18" r="4"/>
-                <path fill="white" d="M15 18l1.5 1.5 3-3-1-1-2 2-0.5-0.5z"/>
-            </svg>
-            Finalizar Compra
-        </button>
 
-    </form>
     <div class="secure-badge">
         <svg viewBox="0 0 24 24">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
@@ -408,89 +413,68 @@
 </div>
 
 <script>
-    let selectedPaymentMethod = null;
-
     document.addEventListener('DOMContentLoaded', function() {
         createPaymentParticles();
-        initializePaymentSelector();
+        initializePaymentMethods();
     });
 
-    function initializePaymentSelector() {
-        const methodSelector = document.getElementById('methodSelector');
-        const methodsDropdown = document.getElementById('methodsDropdown');
-        const dropdownArrow = document.getElementById('dropdownArrow');
-        const methodOptions = document.querySelectorAll('.payment-method-option');
-        const finalizeButton = document.getElementById('finalizeButton');
-        const selectedMethod = document.getElementById('selectedMethod');
-        const selectedIcon = document.getElementById('selectedIcon');
+    function initializePaymentMethods() {
+        const internationalCheckbox = document.getElementById('internationalCheckbox');
+        const webpayTab = document.getElementById('webpayTab');
+        const paypalTab = document.getElementById('paypalTab');
+        const webpayForm = document.getElementById('webpayForm');
+        const paypalForm = document.getElementById('paypalForm');
 
-        // Toggle dropdown
-        methodSelector.addEventListener('click', function() {
-            const isOpen = methodsDropdown.classList.contains('open');
-            if (isOpen) {
-                methodsDropdown.classList.remove('open');
-                dropdownArrow.classList.remove('open');
+        // Manejar cambio en checkbox de compra internacional
+        internationalCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Si es internacional, deshabilitar Webpay y activar PayPal
+                webpayTab.classList.add('disabled');
+                webpayTab.classList.remove('active');
+                paypalTab.classList.add('active');
+
+                webpayForm.classList.remove('active');
+                paypalForm.classList.add('active');
             } else {
-                methodsDropdown.classList.add('open');
-                dropdownArrow.classList.add('open');
-            }
-        });
+                // Si es nacional, habilitar ambos (Webpay por defecto)
+                webpayTab.classList.remove('disabled');
 
-        // Handle method selection
-        methodOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const method = this.dataset.method;
-                const methodName = this.querySelector('span').textContent;
-                const methodImg = this.querySelector('img').cloneNode(true);
+                // Solo cambiar a Webpay si PayPal está activo
+                if (paypalTab.classList.contains('active')) {
+                    webpayTab.classList.add('active');
+                    paypalTab.classList.remove('active');
 
-                // Remove previous selection
-                methodOptions.forEach(opt => opt.classList.remove('selected'));
-
-                // Mark as selected
-                this.classList.add('selected');
-
-                // Update selector button
-                selectedMethod.textContent = methodName;
-                selectedIcon.innerHTML = '';
-                selectedIcon.appendChild(methodImg);
-                methodSelector.classList.add('selected');
-
-                // Close dropdown
-                methodsDropdown.classList.remove('open');
-                dropdownArrow.classList.remove('open');
-
-                // Enable finalize button
-                selectedPaymentMethod = method;
-                finalizeButton.disabled = false;
-
-                // Añadir clase de pulso al botón
-                if (!finalizeButton.classList.contains('pulse-animation')) {
-                    finalizeButton.style.animation = 'pulse 2s infinite';
+                    webpayForm.classList.add('active');
+                    paypalForm.classList.remove('active');
                 }
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!methodSelector.contains(event.target) && !methodsDropdown.contains(event.target)) {
-                methodsDropdown.classList.remove('open');
-                dropdownArrow.classList.remove('open');
             }
         });
-    }
 
-    function handlePayment() {
-        if (selectedPaymentMethod) {
-            alert(`Procesando pago con: ${selectedPaymentMethod}`);
-            // Aquí puedes agregar la lógica para procesar el pago
-            // window.location.href = 'URL_DE_PROCESAMIENTO';
-        }
+        // Manejar clicks en las pestañas
+        webpayTab.addEventListener('click', function() {
+            // Solo permitir click si no está deshabilitado
+            if (!this.classList.contains('disabled')) {
+                webpayTab.classList.add('active');
+                paypalTab.classList.remove('active');
+
+                webpayForm.classList.add('active');
+                paypalForm.classList.remove('active');
+            }
+        });
+
+        paypalTab.addEventListener('click', function() {
+            webpayTab.classList.remove('active');
+            paypalTab.classList.add('active');
+
+            webpayForm.classList.remove('active');
+            paypalForm.classList.add('active');
+        });
     }
 
     function createPaymentParticles() {
         const container = document.getElementById('particles');
         const symbols = ['$', '💳', '🔒', '✓'];
-        const colors = ['#0075c9', '#00ab4e', '#00a0e9', '#333333'];
+        const colors = ['#0075c9', '#00ab4e', '#0070ba', '#333333'];
 
         for (let i = 0; i < 40; i++) {
             setTimeout(() => {

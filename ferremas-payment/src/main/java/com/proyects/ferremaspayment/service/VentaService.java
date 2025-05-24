@@ -1,44 +1,45 @@
 package com.proyects.ferremaspayment.service;
 
 import com.proyects.ferremaspayment.dto.*;
+import com.proyects.ferremaspayment.exceptions.StockNoSuficiente;
+import com.proyects.ferremaspayment.exceptions.UsuarioNoEncontrado;
+import com.proyects.ferremaspayment.exceptions.VentaNoCreada;
+import com.proyects.ferremaspayment.exceptions.VentaNoEncontrada;
 import com.proyects.ferremaspayment.mapper.DetalleVentaMapper;
 import com.proyects.ferremaspayment.mapper.VentaMapper;
 import com.proyects.ferremaspayment.model.DetalleVenta;
 import com.proyects.ferremaspayment.model.Estado;
 import com.proyects.ferremaspayment.model.Venta;
 import com.proyects.ferremaspayment.repository.VentaRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class VentaService {
 
+    @Autowired
     private final VentaRepository ventaRepository;
     private final PaymentClient paymentClient;
     private final PaymentGateway paymentGateway;
     private final VentaMapper ventaMapper;
     private final DetalleVentaMapper detalleVentaMapper;
 
-    @Autowired
-    public VentaService(VentaRepository ventaRepository, PaymentClient paymentClient, PaymentGateway paymentGateway, VentaMapper ventaMapper, DetalleVentaMapper detalleVentaMapper) {
-        this.ventaRepository = ventaRepository;
-        this.paymentClient = paymentClient;
-        this.paymentGateway = paymentGateway;
-        this.ventaMapper = ventaMapper;
-        this.detalleVentaMapper = detalleVentaMapper;
-    }
 
 
 
     //CREAR UNA VENTA
-    public ResponseEntity<VentaDto> createVenta(VentaRequestDto ventaRequestDto) {
+    public ResponseEntity<String> createVenta(VentaRequestDto ventaRequestDto) {
         //validar que el producto existe
 
         List<ItemVentaDto> items = ventaRequestDto.getProductos();
@@ -50,16 +51,21 @@ public class VentaService {
         Venta venta = new Venta();
 
         //Recorro sobre cada producto de una venta especialmente en items donde solo hay id y cantidad
+        Set<Long> ids = new HashSet<>(); //Genero un conjunto que solo permite valores unicos, si se intenta repetir el valor, no se acepta
         for(ItemVentaDto item : items){
 
+            if (!ids.add(item.getProductoId())) { //agrego el producto o la id, si ya existe, no se agrega
+                throw new StockNoSuficiente("El producto con id " + item.getProductoId() + " no puede repetirse");
+            }
+
+            int cantidad = item.getCantidad();
+
             //Valido que cada producto tiene stock disponible.
-            Boolean disponible = paymentClient.validarStock(item.getProductoId());
+            Boolean disponible = paymentClient.validarStock(item.getProductoId(), cantidad);
 
             if(!disponible){
                 //Si no hay stock disponible, se retorna un error
-                return ResponseEntity
-                        .badRequest()
-                        .body(null);
+                throw new StockNoSuficiente("El producto con id " + item.getProductoId() + " no tiene stock suficiente");
             }
 
             //Si pasa la validacion de stock, se procede a obtener el producto desde el microservicio.
@@ -76,7 +82,7 @@ public class VentaService {
             detalle.setProductoId(item.getProductoId());
             detalle.setCantidad(item.getCantidad());
             detalle.setPrecioUnitario(precioUnitario);
-            detalle.setSubtotal(subtotal);
+            detalle.setSubTotal(subtotal);
             detalle.setNombreProducto(producto.getNombre());
             detalle.setVenta(venta);
             //Lo agrego al detalle de la lista de detalles de venta.
@@ -88,11 +94,17 @@ public class VentaService {
         }
 
         //Asigno los detalles y el total a la entidad de la venta para guardarlo en la base de datos
+        UsuarioRequestDto usuario = paymentClient.obtenerUsuario(ventaRequestDto.getUsuarioId());
+        if(usuario == null){
+            throw new UsuarioNoEncontrado("El usuario con id " + ventaRequestDto.getUsuarioId() + " no existe");
+        }
+
+        venta.setUsuarioId(ventaRequestDto.getUsuarioId());
         venta.setDetalle(detalles);
         venta.setUsuarioId(ventaRequestDto.getUsuarioId());
         venta.setMetodoPago(ventaRequestDto.getMetodoPago());
         venta.setMoneda(ventaRequestDto.getMoneda());
-        venta.setEstado(Estado.PENDIENTE);
+        venta.setEstado(Estado.EN_PROCESO);
         venta.setFechaVenta(LocalDateTime.now());
         //Seteo el precio total de la venta
         venta.setTotal(total);
@@ -101,60 +113,40 @@ public class VentaService {
 
         venta.setBuyOrder("fm-" + venta.getId());
 
-        ventaRepository.save(venta);
+        try {
+            ventaRepository.save(venta);
+        }catch (Exception e){
+            throw new VentaNoCreada("La venta no fue creada correctamente, por favor revise los datos ingresados");
+        }
 
         //Retorno la venta creada y respondo con un ok(200) y el mismo dto que se envio
         List<DetalleVentaDto> detalleVentaDto = detalleVentaMapper.toDtoList(detalles);
         VentaDto ventaDto = ventaMapper.ventaToDto(venta);
         ventaDto.setDetalle(detalleVentaDto);
 
-
-
         return ResponseEntity
-                .ok(ventaDto);
+                .status(HttpStatus.CREATED)
+                .body("Venta creada correctamente, para continuar con el pago dirigete a la URL: http://localhost:8085/pago?id=1 O la id de la venta");
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<List<VentaDto>> findAllVentas() {
-        List<VentaDto> ventas = ventaMapper.toDtoList(ventaRepository.findAll());
+    public ResponseEntity<List<VentaResponseDto>> findAllVentas() {
+        List<VentaResponseDto> ventas = ventaMapper.toResponseDtoList(ventaRepository.findAll());
 
-        return ResponseEntity.ok(ventas);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ventas);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<VentaDto> findVentaById(Long id) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("La venta con la id " + id + " no existe"));
+                .orElseThrow(() -> new VentaNoEncontrada("La venta con la id " + id + " no existe, revisa la base de datos e intenta nuevamente"));
 
         VentaDto ventaDto = ventaMapper.ventaToDto(venta);
 
         return ResponseEntity
-                .ok(ventaDto);
+                .status(HttpStatus.OK)
+                .body(ventaDto);
     }
-//    @Transactional
-//    public ResponseEntity<String> updateVenta(Long id, UpdateVentaDto updateVentaDto){
-//        Venta venta = ventaRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("La venta con la id " + id + " no existe"));
-//
-//        //Actualizo la venta
-//        Optional<Venta> ventaExistente = ventaRepository.findById(id);
-//
-//        if(ventaExistente.isPresent()){
-//            Venta ventas = ventaExistente.get();
-//
-//
-//            venta.setMetodoPago(updateVentaDto.getMetodoPago());
-//            venta.setMoneda(updateVentaDto.getMoneda());
-//
-//
-//            for(DetalleVentaDto detalle : venta.getDetalle()){
-//                //Actualizo el stock de cada producto
-//
-//
-//            }
-//        }
-//
-//
-//
-//    }
 }

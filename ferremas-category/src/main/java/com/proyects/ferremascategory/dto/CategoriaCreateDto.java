@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CategoriaCreateDto {
 
-    @NotNull
+    @NotNull(message = "El nombre no puede ser nulo")
     private String nombre;
-    @NotNull
+
+    @NotNull(message = "La descripcion no puede ser nula")
     private String descripcion;
     private String imagen;
 }

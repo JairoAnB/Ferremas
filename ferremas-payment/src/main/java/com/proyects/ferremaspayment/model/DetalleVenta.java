@@ -28,7 +28,7 @@ public class DetalleVenta {
     @Column(name = "precio_unitario")
     private int precioUnitario;
 
-    private int subtotal;
+    private int subTotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venta_id")

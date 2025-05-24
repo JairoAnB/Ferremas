@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -57,7 +57,7 @@ public class ProductoController {
     }
 
     @PutMapping("/stock/{id}/update/{stock}")
-    public ResponseEntity<ProductoUpdateStockDto> updateStock(@PathVariable Long id, @PathVariable int stock) {
+    public ResponseEntity<ProductoUpdateStockDto> updateStock(@Valid @PathVariable Long id, @PathVariable int stock) {
         return productoService.updateStock(id, stock);
     }
 
@@ -67,7 +67,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProducto(@PathVariable Long id) {
+    public ResponseEntity<String> deleteProducto(@PathVariable Long id)  {
         return productoService.deleteProducto(id);
     }
 }

@@ -2,6 +2,7 @@ package com.proyects.ferremaspayment.mapper;
 
 import com.proyects.ferremaspayment.dto.VentaDto;
 import com.proyects.ferremaspayment.dto.VentaRequestDto;
+import com.proyects.ferremaspayment.dto.VentaResponseDto;
 import com.proyects.ferremaspayment.model.Venta;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,4 +22,9 @@ public interface VentaMapper {
     Venta toEntity(VentaDto dto);
 
     List<VentaDto> toDtoList(List<Venta> ventas);
+
+
+    VentaResponseDto toDtoResponse(Venta venta);
+
+    List<VentaResponseDto> toResponseDtoList(List<Venta> ventas);
 }

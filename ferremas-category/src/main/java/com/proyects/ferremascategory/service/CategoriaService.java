@@ -3,6 +3,7 @@ package com.proyects.ferremascategory.service;
 
 import com.proyects.ferremascategory.dto.CategoriaCreateDto;
 import com.proyects.ferremascategory.dto.CategoriaDto;
+import com.proyects.ferremascategory.dto.CategoriaResponseDto;
 import com.proyects.ferremascategory.dto.CategoriaUpdateDto;
 import com.proyects.ferremascategory.exceptions.CategoriaNoCreada;
 import com.proyects.ferremascategory.exceptions.CategoriaNoEncontrada;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +60,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public ResponseEntity<String> createCategoria(@Valid CategoriaCreateDto categoriaCreateDto) {
+    public ResponseEntity<CategoriaResponseDto> createCategoria(@Valid CategoriaCreateDto categoriaCreateDto) {
         // verfico si la categoria existe mediante una consulta personalizada en el repositorio
         // Obtengo un opcional que me retorna solo un valor, que no puede ser nulo
         Optional<Categoria> categoriaExistente = categoriaRepository.findByNombre(categoriaCreateDto.getNombre());
@@ -66,9 +68,18 @@ public class CategoriaService {
         // si el opcional no esta vacio, significa que ya existe una categoria con ese nombre
         // por lo tanto retorno un response entity con un mensaje de error personalizado mas un status 409 de conflicto
         if (!categoriaExistente.isEmpty()) {
+
+            CategoriaResponseDto categoriaResponseDto = new CategoriaResponseDto();
+
+            categoriaResponseDto.setId(categoriaExistente.get().getId());
+            categoriaResponseDto.setMessage("Error, no pueden haber categorias duplicadas. Por favor intente nuevamente");
+            categoriaResponseDto.setStatus(HttpStatus.CONFLICT);
+            categoriaResponseDto.setTimestamp(LocalDateTime.now());
+
+
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
-                    .body("Error, no pueden haber categorias duplicadas. Por favor intente nuevamente");
+                    .body(categoriaResponseDto);
         }
 
         // si la categoria no existe, paso el DTO recibido a una entidad del modelo Categoria y sigo con el flujo normal
@@ -80,8 +91,16 @@ public class CategoriaService {
 
          CategoriaDto categoriaDto = categoriaMapper.toDto(categoriaCreada);
 
-         return ResponseEntity.status(HttpStatus.CREATED)
-                 .body("Categoria creada correctamente con id: " + categoriaDto.getId());
+         CategoriaResponseDto categoriaResponseDto = new CategoriaResponseDto();
+
+            categoriaResponseDto.setId(categoriaDto.getId());
+            categoriaResponseDto.setMessage("Categoria creada correctamente");
+            categoriaResponseDto.setStatus(HttpStatus.CREATED);
+            categoriaResponseDto.setTimestamp(LocalDateTime.now());
+
+         return ResponseEntity
+                 .status(HttpStatus.CREATED)
+                 .body(categoriaResponseDto);
 
          } catch (CategoriaNoCreada e) {
              throw new CategoriaNoCreada("La categoria no fue creada correctamente");
@@ -90,7 +109,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public ResponseEntity<String> updateCategoria(@Valid Long id, CategoriaUpdateDto categoriaUpdateDto){
+    public ResponseEntity<CategoriaResponseDto> updateCategoria(@Valid Long id, CategoriaUpdateDto categoriaUpdateDto){
         Categoria categoriaExistente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNoEncontrada("La categoria con la id " + id + " no existe"));
 
@@ -102,21 +121,32 @@ public class CategoriaService {
 
         CategoriaDto categoriaDto = categoriaMapper.toDto(categoriaActualizada);
 
+        CategoriaResponseDto categoriaResponseDto = new CategoriaResponseDto();
+        categoriaResponseDto.setId(categoriaDto.getId());
+        categoriaResponseDto.setMessage("Categoria actualizada correctamente");
+        categoriaResponseDto.setStatus(HttpStatus.OK);
+        categoriaResponseDto.setTimestamp(LocalDateTime.now());
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Categoria actualizada correctamente con id: " + categoriaDto.getId());
-
-
+                .body(categoriaResponseDto);
     }
 
     @Transactional
-    public ResponseEntity<String> deleteCategoria(Long id){
+    public ResponseEntity<CategoriaResponseDto> deleteCategoria(Long id){
         Categoria categoriaExistente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNoEncontrada("La categoria con la id " + id + " no existe"));
 
         categoriaRepository.delete(categoriaExistente);
 
+        CategoriaResponseDto categoriaResponseDto = new CategoriaResponseDto();
+        categoriaResponseDto.setId(categoriaExistente.getId());
+        categoriaResponseDto.setMessage("Categoria eliminada correctamente");
+        categoriaResponseDto.setStatus(HttpStatus.OK);
+        categoriaResponseDto.setTimestamp(LocalDateTime.now());
+
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body("La categoria con la id " + id + " fue eliminada correctamente");
+                .body(categoriaResponseDto);
     }
 }

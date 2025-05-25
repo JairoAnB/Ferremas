@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -61,7 +62,7 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<ProductoDto> createProducto(ProductoCreateDto productoCreateDto){
+    public ResponseEntity<ProductResponseDto> createProducto(ProductoCreateDto productoCreateDto){
 
         ResponseEntity<CategoriaRequestDto> categoria = categoriaClient.validarCategoria(productoCreateDto.getCategoriaId());
 
@@ -77,8 +78,17 @@ public class ProductoService {
             //Paso la entidad guardada a DTO
             ProductoDto productoGuardado = productoMapper.toDto(entidadGuardada);
             //Retorno el DTO guardado, con el status de creado
+
+            //creo la respuesta del dto
+
+            ProductResponseDto productResponseDto = new ProductResponseDto();
+            productResponseDto.setId(productoGuardado.getId());
+            productResponseDto.setMessage("El producto fue creado correctamente");
+            productResponseDto.setStatus(HttpStatus.CREATED);
+            productResponseDto.setTimestamp(LocalDateTime.now());
+
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productoGuardado);
+                    .body(productResponseDto);
 
         } catch (Exception e) {
             throw new ProductoNoCreado("El producto no fue creado correctamente, por favor revisa los datos ingresados");
@@ -86,7 +96,7 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<ProductoDto> updateProducto(Long id, ProductoUpdateDto productoUpdateDto){
+    public ResponseEntity<ProductResponseDto> updateProducto(Long id, ProductoUpdateDto productoUpdateDto){
 
         //Busco el producto existente en la base de datos
         Producto productoExistente = productoRepository.findById(id)
@@ -107,9 +117,16 @@ public class ProductoService {
             //Paso la entidad actualizada a DTO
             ProductoDto productoActualizado = productoMapper.toDto(entidadActualizada);
 
+            ProductResponseDto productResponseDto = new ProductResponseDto();
+
+            productResponseDto.setId(productoActualizado.getId());
+            productResponseDto.setMessage("El producto fue actualizado correctamente");
+            productResponseDto.setStatus(HttpStatus.OK);
+            productResponseDto.setTimestamp(LocalDateTime.now());
+
             //Retorno el DTO actualizado, con el status de OK
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(productoActualizado);
+                    .body(productResponseDto);
 
         } catch (Exception e) {
             throw new ProductoNoActualizado("El producto con la id " + id + " no fue actualizado correctamente");
@@ -117,15 +134,24 @@ public class ProductoService {
     }
 
     @Transactional
-    public ResponseEntity<String> deleteProducto(Long id){
+    public ResponseEntity<ProductResponseDto> deleteProducto(Long id){
         //Busco el producto existente en la base de datos
         Producto productoExistente = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
         try{
             //Elimino el producto existente
             productoRepository.delete(productoExistente);
+
+            ProductResponseDto productResponseDelete = new ProductResponseDto();
+
+            productResponseDelete.setId(productoExistente.getId());
+            productResponseDelete.setMessage("El producto fue eliminado correctamente");
+            productResponseDelete.setStatus(HttpStatus.OK);
+            productResponseDelete.setTimestamp(LocalDateTime.now());
+
             return ResponseEntity.status(HttpStatus.OK)
-                    .body("El producto con la id " + id + " fue eliminado correctamente.");
+                    .body(productResponseDelete);
+
         } catch (Exception e) {
             throw new ProductoNoEliminado("El producto con la id " + id + " no fue eliminado");
         }
@@ -137,7 +163,6 @@ public class ProductoService {
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
 
         try{
-
             //Actualizo el stock del producto
             productoExistente.setStock(stock);
             //Guardo la entidad actualizada en la base de datos

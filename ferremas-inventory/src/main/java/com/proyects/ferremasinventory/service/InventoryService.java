@@ -1,5 +1,6 @@
 package com.proyects.ferremasinventory.service;
 
+import com.proyects.ferremasinventory.dto.ProductResponseDto;
 import com.proyects.ferremasinventory.dto.ProductoInventoryDto;
 import com.proyects.ferremasinventory.dto.RequestStockDto;
 import com.proyects.ferremasinventory.exceptions.ProductoNoEncontrado;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -64,7 +66,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public ResponseEntity<String> transferirStock(Long id, @Valid RequestStockDto requestStockDto) {
+    public ResponseEntity<ProductResponseDto> transferirStock(Long id, @Valid RequestStockDto requestStockDto) {
         Producto productoEntity = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
 
@@ -72,9 +74,17 @@ public class InventoryService {
         int stockBodega = productoEntity.getStockBodega();
 
         if (stockBodega < cantidad) {
+
+            ProductResponseDto inventoryResponse = new ProductResponseDto();
+
+            inventoryResponse.setId(productoEntity.getId());
+            inventoryResponse.setMessage("No hay suficiente stock en bodega para transferir al producto con id " + id);
+            inventoryResponse.setStatus(HttpStatus.BAD_REQUEST);
+            inventoryResponse.setTimestamp(LocalDateTime.now());
+
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body("No hay suficiente stock en bodega para transferir " + cantidad);
+                    .body(inventoryResponse);
         }
 
         productoEntity.setStockBodega(stockBodega - cantidad);
@@ -82,9 +92,16 @@ public class InventoryService {
 
         productoRepository.save(productoEntity);
 
+        ProductResponseDto productResponseDto = new ProductResponseDto();
+
+        productResponseDto.setId(productoEntity.getId());
+        productResponseDto.setMessage("Se transfirió el stock correctamente al producto con id " + id);
+        productResponseDto.setStatus(HttpStatus.OK);
+        productResponseDto.setTimestamp(LocalDateTime.now());
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Se transfirió el stock correctamente");
+                .body(productResponseDto);
     }
 
 }

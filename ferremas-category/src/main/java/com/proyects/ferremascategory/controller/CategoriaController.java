@@ -2,6 +2,7 @@ package com.proyects.ferremascategory.controller;
 
 import com.proyects.ferremascategory.dto.CategoriaCreateDto;
 import com.proyects.ferremascategory.dto.CategoriaDto;
+import com.proyects.ferremascategory.dto.CategoriaResponseDto;
 import com.proyects.ferremascategory.dto.CategoriaUpdateDto;
 import com.proyects.ferremascategory.service.CategoriaService;
 import jakarta.validation.Valid;
@@ -33,17 +34,17 @@ public class CategoriaController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createCategoria(@Valid @RequestBody CategoriaCreateDto categoriaCreateDto) {
+    public ResponseEntity<CategoriaResponseDto> createCategoria(@Valid @RequestBody CategoriaCreateDto categoriaCreateDto) {
         return categoriaService.createCategoria(categoriaCreateDto);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateCategoria(@PathVariable Long id, @Valid @RequestBody CategoriaUpdateDto categoriaUpdateDto) {
+    public ResponseEntity<CategoriaResponseDto> updateCategoria(@PathVariable Long id, @Valid @RequestBody CategoriaUpdateDto categoriaUpdateDto) {
         return categoriaService.updateCategoria(id, categoriaUpdateDto);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteCategoria(@PathVariable Long id) {
+    public ResponseEntity<CategoriaResponseDto> deleteCategoria(@PathVariable Long id) {
         return categoriaService.deleteCategoria(id);
     }
 }

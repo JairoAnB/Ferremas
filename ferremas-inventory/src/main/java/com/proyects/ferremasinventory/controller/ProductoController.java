@@ -1,9 +1,6 @@
 package com.proyects.ferremasinventory.controller;
 
-import com.proyects.ferremasinventory.dto.ProductoCreateDto;
-import com.proyects.ferremasinventory.dto.ProductoDto;
-import com.proyects.ferremasinventory.dto.ProductoUpdateDto;
-import com.proyects.ferremasinventory.dto.ProductoUpdateStockDto;
+import com.proyects.ferremasinventory.dto.*;
 import com.proyects.ferremasinventory.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,21 +36,15 @@ public class ProductoController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createProducto(@Valid @RequestBody ProductoCreateDto productoCreateDtoDto) {
+    public ResponseEntity<ProductResponseDto> createProducto(@Valid @RequestBody ProductoCreateDto productoCreateDtoDto) {
 
-        productoService.createProducto(productoCreateDtoDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("El producto fue creado correctamente.");
+        return productoService.createProducto(productoCreateDtoDto);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateProducto(@PathVariable Long id, @Valid @RequestBody ProductoUpdateDto productoUpdateDto) {
-        productoService.updateProducto(id, productoUpdateDto);
+    public ResponseEntity<ProductResponseDto> updateProducto(@PathVariable Long id, @Valid @RequestBody ProductoUpdateDto productoUpdateDto) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("El producto fue actualizado correctamente.");
+        return productoService.updateProducto(id, productoUpdateDto);
     }
 
     @PutMapping("/stock/{id}/update/{stock}")
@@ -67,7 +58,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProducto(@PathVariable Long id)  {
+    public ResponseEntity<ProductResponseDto> deleteProducto(@PathVariable Long id)  {
         return productoService.deleteProducto(id);
     }
 }

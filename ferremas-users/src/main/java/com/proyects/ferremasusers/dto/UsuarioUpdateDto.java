@@ -3,6 +3,7 @@ package com.proyects.ferremasusers.dto;
 
 import com.proyects.ferremasusers.model.RolUsuario;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
@@ -20,6 +21,6 @@ public class UsuarioUpdateDto {
     private String email;
     @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
-    @NotBlank(message = "El rol no puede estar vacío, debe ser ADMINISTRADOR, USUARIO o CLIENTE")
+    @NotNull(message = "El rol no puede estar vacío, debe ser ADMINISTRADOR, USUARIO o CLIENTE")
     private RolUsuario rol;
 }

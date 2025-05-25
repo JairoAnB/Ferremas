@@ -1,5 +1,6 @@
 package com.proyects.ferremasinventory.controller;
 
+import com.proyects.ferremasinventory.dto.ProductResponseDto;
 import com.proyects.ferremasinventory.dto.ProductoInventoryDto;
 import com.proyects.ferremasinventory.dto.RequestStockDto;
 import com.proyects.ferremasinventory.service.InventoryService;
@@ -36,7 +37,7 @@ public class InventoryController {
     }
 
     @PutMapping("/transfer/{id}")
-    public ResponseEntity<String> transferProduct(@PathVariable Long id, @Valid @RequestBody RequestStockDto stock) {
+    public ResponseEntity<ProductResponseDto> transferProduct(@PathVariable Long id, @Valid @RequestBody RequestStockDto stock) {
 
         return inventoryService.transferirStock(id, stock);
     }

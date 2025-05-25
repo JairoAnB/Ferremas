@@ -1,6 +1,7 @@
 package com.proyects.ferremasusers.controller;
 
 import com.proyects.ferremasusers.dto.UsuarioCreateDto;
+import com.proyects.ferremasusers.dto.UsuarioCreateResponse;
 import com.proyects.ferremasusers.dto.UsuarioDto;
 import com.proyects.ferremasusers.dto.UsuarioUpdateDto;
 import com.proyects.ferremasusers.service.UsuarioService;
@@ -35,17 +36,17 @@ public class UsuarioController {
 
     @PostMapping("/create")
     //OBLIGATORIO LA ANOTACION DE REQUEST BODYYYYYYY!!
-    public ResponseEntity<UsuarioDto> createUsuario(@Valid @RequestBody UsuarioCreateDto usuarioCreateDto)  {
+    public ResponseEntity<UsuarioCreateResponse> createUsuario(@Valid @RequestBody UsuarioCreateDto usuarioCreateDto)  {
         return usuarioService.createUsuario(usuarioCreateDto);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUsuario(@PathVariable Long id,@Valid @RequestBody UsuarioUpdateDto usuarioUpdateDto) {
+    public ResponseEntity<UsuarioCreateResponse> updateUsuario(@PathVariable Long id,@Valid @RequestBody UsuarioUpdateDto usuarioUpdateDto) {
         return usuarioService.updateUsuario(id, usuarioUpdateDto);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<UsuarioCreateResponse> deleteUsuario(@PathVariable Long id) {
         return usuarioService.deleteUsuario(id);
     }
 }

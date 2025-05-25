@@ -32,11 +32,8 @@ public class VentaService {
     private final VentaMapper ventaMapper;
     private final DetalleVentaMapper detalleVentaMapper;
 
-
-
-
     //CREAR UNA VENTA
-    public ResponseEntity<String> createVenta(VentaRequestDto ventaRequestDto) {
+    public ResponseEntity<CreateSaleResponse> createVenta(VentaRequestDto ventaRequestDto) {
         //validar que el producto existe
 
         List<ItemVentaDto> items = ventaRequestDto.getProductos();
@@ -128,9 +125,16 @@ public class VentaService {
         VentaDto ventaDto = ventaMapper.ventaToDto(venta);
         ventaDto.setDetalle(detalleVentaDto);
 
+        CreateSaleResponse createSaleResponse = new CreateSaleResponse();
+
+        createSaleResponse.setId(venta.getId());
+        createSaleResponse.setMessage("Venta creada correctamente, dirigete a localhost:8085/pago?id=" + venta.getId() + " para realizar el pago");
+        createSaleResponse.setStatus(HttpStatus.CREATED);
+        createSaleResponse.setTimestamp(LocalDateTime.now());
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body("Venta creada correctamente, para continuar con el pago dirigete a la URL: http://localhost:8085/pago?id=1 O la id de la venta");
+                .body(createSaleResponse);
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,6 @@
 package com.proyects.ferremaspayment.controller;
 
+import com.proyects.ferremaspayment.dto.CreateSaleResponse;
 import com.proyects.ferremaspayment.dto.VentaDto;
 import com.proyects.ferremaspayment.dto.VentaRequestDto;
 import com.proyects.ferremaspayment.dto.VentaResponseDto;
@@ -23,7 +24,7 @@ public class VentaRestController {
 
     @Transactional
     @PostMapping("/create")
-    public ResponseEntity<String> createVenta(@Valid @RequestBody VentaRequestDto ventaRequestDto){
+    public ResponseEntity<CreateSaleResponse> createVenta(@Valid @RequestBody VentaRequestDto ventaRequestDto){
         return ventaService.createVenta(ventaRequestDto);
     }
 

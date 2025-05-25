@@ -51,7 +51,7 @@ public class ControllerHandler {
     @ExceptionHandler(ErrorWebpayConfirmarPago.class)
     public ResponseEntity<ExceptionMessage> handlerErrorWebpay(ErrorWebpayConfirmarPago ex) {
         ExceptionMessage error = new ExceptionMessage(ex.getMessage(), "Ocurrio un error al intentar aceptar el pago, revise la solicitud o los servidores de Webpay");
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ErrorAlActualizar.class)

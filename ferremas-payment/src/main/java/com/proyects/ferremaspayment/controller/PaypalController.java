@@ -53,7 +53,7 @@ public class PaypalController {
             cambio = paymentClient.obtenerCambio(ventaResponse.getMoneda(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
             if(cambio.getSerie().isEmpty()){
-                cambio = paymentClient.obtenerCambio(ventaResponse.getMoneda(), LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                cambio = paymentClient.obtenerCambio(ventaResponse.getMoneda(),"23-05-2025"); //ultima fecha de dolar para evitar index out of bounds
             }
 
             dolarValor = cambio.getSerie().get(0).getValor();
@@ -68,6 +68,10 @@ public class PaypalController {
 
             cambio = paymentClient.obtenerCambio(ventaResponse.getMoneda(), LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
+            if(cambio.getSerie().isEmpty()){
+                cambio = paymentClient.obtenerCambio(ventaResponse.getMoneda(),"23-05-2025");
+            }
+
             BigDecimal euroValor = cambio.getSerie().get(0).getValor();
             BigDecimal totalCompra = BigDecimal.valueOf(ventaResponse.getTotal());
 
@@ -77,13 +81,13 @@ public class PaypalController {
             currency = "EUR";
 
         } else {
-            currency = "CLP";
+            currency = "USD"; // DIVISA por defecto
         }
 
         try{
 
-           String cancelUrl = "http://localhost:8085/paypal/cancel";
-           String successUrl = "http://localhost:8085/paypal/success";
+            String cancelUrl = "http://localhost:8085/paypal/cancel";
+            String successUrl = "http://localhost:8085/paypal/success";
 
             Payment payment = paymentGateway.createPago(
                     total.doubleValue(), currency,"paypal","sale", ventaResponse.getId().toString(),"prueba venta",cancelUrl, successUrl

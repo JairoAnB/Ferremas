@@ -6,6 +6,7 @@ import com.proyects.ferremasinventory.exceptions.ProductoNoEncontrado;
 import com.proyects.ferremasinventory.mapper.ProductoMapper;
 import com.proyects.ferremasinventory.model.Producto;
 import com.proyects.ferremasinventory.repository.ProductoRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class InventoryService {
     @Transactional(readOnly = true)
     public ResponseEntity<ProductoInventoryDto> findProductoInventorybyId(Long id){
         Producto productoEntity = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El producto con la id " + id + " no existe"));
+                .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
 
         ProductoInventoryDto productoInventoryDto = productoMapper.toInventoryDto(productoEntity);
 
@@ -53,7 +54,7 @@ public class InventoryService {
     @Transactional
     public ResponseEntity<ProductoInventoryDto> updateInventory(Long id, int stock){
         ProductoInventoryDto productoInventoryDto = productoMapper.toInventoryDto(productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El producto con la id " + id + " no existe")));
+                .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe")));
 
         productoInventoryDto.setStockBodega(stock);
 
@@ -63,7 +64,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public ResponseEntity<String> transferirStock(Long id, RequestStockDto requestStockDto) {
+    public ResponseEntity<String> transferirStock(Long id, @Valid RequestStockDto requestStockDto) {
         Producto productoEntity = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
 

@@ -33,7 +33,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoDto> getProductoById(@Valid @PathVariable Long id) {
+    public ResponseEntity<ProductoDto> getProductoById(@PathVariable Long id) {
 
         return productoService.findProductoById(id);
     }
@@ -48,7 +48,7 @@ public class ProductoController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateProducto(@Valid @PathVariable Long id, @RequestBody ProductoUpdateDto productoUpdateDto) {
+    public ResponseEntity<String> updateProducto(@PathVariable Long id, @Valid @RequestBody ProductoUpdateDto productoUpdateDto) {
         productoService.updateProducto(id, productoUpdateDto);
 
         return ResponseEntity
@@ -57,7 +57,7 @@ public class ProductoController {
     }
 
     @PutMapping("/stock/{id}/update/{stock}")
-    public ResponseEntity<ProductoUpdateStockDto> updateStock(@Valid @PathVariable Long id, @PathVariable int stock) {
+    public ResponseEntity<ProductoUpdateStockDto> updateStock(@Valid @PathVariable Long id,@PathVariable int stock) {
         return productoService.updateStock(id, stock);
     }
 

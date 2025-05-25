@@ -13,79 +13,280 @@
         }
 
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="50" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="30" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: backgroundShift 20s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-10px) translateY(-5px); }
+            50% { transform: translateX(5px) translateY(-10px); }
+            75% { transform: translateX(-5px) translateY(5px); }
         }
 
         .payment-card {
-            background-color: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow:
+                    0 20px 40px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(255, 255, 255, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
             width: 90%;
             max-width: 500px;
             padding: 40px;
             text-align: center;
-            transform: translateY(50px);
+            transform: translateY(30px) scale(0.95);
             opacity: 0;
-            animation: slideUp 0.8s ease forwards;
+            animation: cardEntrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes cardEntrance {
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
         }
 
         .payment-icon {
             width: 80px;
             height: 80px;
-            background-color: #0075c9;
+            background: linear-gradient(135deg, #0075c9, #00a8ff);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
             position: relative;
-            animation: float 3s ease-in-out infinite;
+            animation: iconFloat 4s ease-in-out infinite, iconPulse 2s ease-in-out infinite;
+            box-shadow:
+                    0 8px 25px rgba(0, 117, 201, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .payment-icon::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #0075c9, #00a8ff, #0075c9);
+            z-index: -1;
+            animation: iconGlow 3s ease-in-out infinite;
         }
 
         .payment-icon svg {
             width: 40px;
             height: 40px;
             fill: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            animation: iconSpin 8s linear infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            50% { transform: translateY(-5px) rotate(0deg); }
+            75% { transform: translateY(-12px) rotate(-2deg); }
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 8px 25px rgba(0, 117, 201, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 12px 30px rgba(0, 117, 201, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+        }
+
+        @keyframes iconGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        @keyframes iconSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         h1 {
             color: #333;
             margin-bottom: 15px;
             font-size: 28px;
-            animation: fadeIn 1s ease 0.5s forwards;
+            font-weight: 700;
+            animation: textSlideIn 1s ease 0.5s forwards, textGlow 3s ease-in-out 2s infinite;
             opacity: 0;
+            background: linear-gradient(45deg, #333, #0075c9, #333);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes textSlideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         p {
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             line-height: 1.6;
-            animation: fadeIn 1s ease 0.7s forwards;
+            font-size: 15px;
+            animation: textSlideIn 1s ease 0.7s forwards;
             opacity: 0;
         }
 
-        .gif-container {
+        .amount-display {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #0075c9, #00a8ff, #0075c9);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            animation:
+                    textSlideIn 1s ease 0.6s forwards,
+                    amountPulse 2s ease-in-out 1.5s infinite,
+                    gradientShift 4s ease-in-out infinite;
+            opacity: 0;
+            text-shadow: 0 4px 8px rgba(0, 117, 201, 0.3);
+            position: relative;
+        }
+
+        .amount-display::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(45deg, #0075c9, #00a8ff);
+            border-radius: 2px;
+            animation: underlineGrow 1s ease 1.5s forwards;
+            transform-origin: center;
+            scale: 0;
+        }
+
+        @keyframes amountPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes underlineGrow {
+            to { scale: 1; }
+        }
+
+        .animated-container {
             width: 100%;
-            height: 200px;
+            height: 160px;
             margin: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            animation: fadeIn 1s ease 0.9s forwards;
+            animation: textSlideIn 1s ease 0.9s forwards;
             opacity: 0;
-            border-radius: 8px;
+            border-radius: 16px;
             overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg,
+            rgba(0, 117, 201, 0.1),
+            rgba(0, 168, 255, 0.1),
+            rgba(0, 117, 201, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .gif-container img {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 8px;
+        .money-animation {
+            position: absolute;
+            font-size: 48px;
+            animation: moneyFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .money-animation:nth-child(1) {
+            animation-delay: 0s;
+            left: 15%;
+            animation-duration: 4s;
+        }
+        .money-animation:nth-child(2) {
+            animation-delay: 1.3s;
+            left: 50%;
+            animation-duration: 3.5s;
+        }
+        .money-animation:nth-child(3) {
+            animation-delay: 2.6s;
+            left: 85%;
+            animation-duration: 4.5s;
+        }
+
+        @keyframes moneyFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.8;
+            }
+            25% {
+                transform: translateY(-20px) rotate(8deg) scale(1.05);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-15px) rotate(-4deg) scale(0.95);
+                opacity: 0.9;
+            }
+            75% {
+                transform: translateY(-25px) rotate(10deg) scale(1.02);
+                opacity: 1;
+            }
         }
 
         .international-check {
@@ -93,124 +294,270 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            animation: fadeIn 1s ease 0.8s forwards;
+            gap: 12px;
+            animation: textSlideIn 1s ease 0.8s forwards;
             opacity: 0;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .international-check:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .international-check input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
+            accent-color: #0075c9;
+            transform: scale(1.1);
+            transition: all 0.3s ease;
+        }
+
+        .international-check input[type="checkbox"]:checked {
+            animation: checkboxBounce 0.5s ease;
+        }
+
+        @keyframes checkboxBounce {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.3); }
         }
 
         .international-check label {
             font-size: 16px;
             color: #333;
             cursor: pointer;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .international-check:hover label {
+            color: #0075c9;
+        }
+
+        .currency-note {
+            margin: 8px 0 15px 0;
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            animation: textSlideIn 1s ease 0.85s forwards;
+            opacity: 0;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            border-left: 3px solid #0075c9;
+            text-align: left;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .payment-methods {
             margin: 20px 0;
-            animation: fadeIn 1s ease 1s forwards;
+            animation: textSlideIn 1s ease 1s forwards;
             opacity: 0;
         }
 
         .payment-method-tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .payment-tab {
-            padding: 10px 20px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            padding: 12px 25px;
+            border: 2px solid rgba(0, 117, 201, 0.3);
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            font-weight: 600;
             color: #666;
             flex: 1;
-            max-width: 150px;
+            max-width: 140px;
+            position: relative;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .payment-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .payment-tab:hover::before {
+            left: 100%;
         }
 
         .payment-tab:hover {
             border-color: #0075c9;
-            background-color: #f0f8ff;
+            background: rgba(0, 117, 201, 0.1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 117, 201, 0.2);
         }
 
         .payment-tab.active {
             border-color: #0075c9;
-            background-color: #e3f2fd;
-            color: #0075c9;
+            background: linear-gradient(135deg, #0075c9, #00a8ff);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(0, 117, 201, 0.4);
+            animation: tabActivate 0.5s ease;
+        }
+
+        @keyframes tabActivate {
+            0% { transform: translateY(-1px) scale(1); }
+            50% { transform: translateY(-3px) scale(1.03); }
+            100% { transform: translateY(-1px) scale(1); }
         }
 
         .payment-tab.disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
-            border-color: #ddd;
-            background-color: #f5f5f5;
+            background: rgba(200, 200, 200, 0.3);
+            border-color: rgba(200, 200, 200, 0.5);
+            transform: none;
+        }
+
+        .payment-tab.disabled:hover {
+            transform: none;
+            box-shadow: none;
         }
 
         .payment-form {
             display: none;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 25px;
+            border: 1px solid rgba(0, 117, 201, 0.2);
+            border-radius: 16px;
             margin-bottom: 20px;
-            background-color: #f8f9fa;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0075c9, #00a8ff, #0075c9);
+            background-size: 200% 100%;
+            animation: formBorderFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes formBorderFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .payment-form.active {
             display: block;
-            animation: fadeIn 0.5s ease forwards;
+            animation: formSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .payment-button {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
             color: #333;
             border: none;
             padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             margin: 0 auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 300px;
-            opacity: 1;
+            box-shadow:
+                    0 6px 15px rgba(0, 0, 0, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            max-width: 280px;
             width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 117, 201, 0.3) 0%, transparent 70%);
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+
+        .payment-button:hover::before {
+            width: 250px;
+            height: 250px;
         }
 
         .payment-button:disabled {
-            background-color: #f5f5f5;
+            background: rgba(245, 245, 245, 0.8);
             color: #999;
             cursor: not-allowed;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
         }
 
         .payment-button:not(:disabled):hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
         }
 
-        .payment-button-container {
-            margin-top: 20px;
-            animation: fadeIn 1s ease 1.1s forwards;
-            opacity: 0;
-            position: relative;
+        .payment-button:not(:disabled):active {
+            transform: translateY(-1px) scale(0.98);
+            animation: buttonPress 0.2s ease;
+        }
+
+        @keyframes buttonPress {
+            0% { transform: translateY(-3px) scale(1.02); }
+            50% { transform: translateY(-1px) scale(0.98); }
+            100% { transform: translateY(-1px) scale(0.98); }
         }
 
         .payment-icon-small {
             height: 24px;
             width: 24px;
             display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .payment-button:hover .payment-icon-small {
+            transform: rotate(360deg) scale(1.1);
         }
 
         .secure-badge {
@@ -220,34 +567,43 @@
             gap: 8px;
             margin-top: 20px;
             color: #666;
-            font-size: 14px;
-            animation: fadeIn 1s ease 1.3s forwards;
+            font-size: 13px;
+            font-weight: 500;
+            animation: textSlideIn 1s ease 1.3s forwards;
             opacity: 0;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .secure-badge svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             fill: #0075c9;
+            animation: badgeIconSpin 4s linear infinite;
         }
 
-        .amount-display {
-            font-size: 32px;
-            font-weight: bold;
-            color: #333;
-            margin: 15px 0;
-            animation: fadeIn 1s ease 0.6s forwards, highlight 2s ease 1.5s;
-            opacity: 0;
+        @keyframes badgeIconSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .payment-logo {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 700;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
 
         .paypal-logo {
@@ -256,57 +612,27 @@
 
         .paypal-logo span:first-child {
             color: #0070ba;
+            animation: logoColorShift 2s ease-in-out infinite;
         }
 
         .paypal-logo span:last-child {
             color: #003087;
+            animation: logoColorShift 2s ease-in-out infinite reverse;
+        }
+
+        @keyframes logoColorShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .webpay-logo {
             color: #0075c9;
+            animation: logoGlow 3s ease-in-out infinite;
         }
 
-        @keyframes slideUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-            70% {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            }
-            100% {
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @keyframes highlight {
-            0%, 100% {
-                color: #333;
-            }
-            50% {
-                color: #0075c9;
-            }
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 5px rgba(0, 117, 201, 0.3); }
+            50% { text-shadow: 0 0 15px rgba(0, 117, 201, 0.6); }
         }
 
         .particles-container {
@@ -324,20 +650,82 @@
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
-            animation: particleAnimation 3s ease-in-out forwards;
+            animation: particleAnimation 4s ease-in-out forwards;
         }
 
         @keyframes particleAnimation {
             0% {
-                transform: translate(0, 0);
+                transform: translate(0, 0) scale(0);
                 opacity: 0;
             }
-            20% {
+            10% {
                 opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            90% {
+                opacity: 0.8;
             }
             100% {
-                transform: translate(var(--tx), var(--ty));
+                transform: translate(var(--tx), var(--ty)) scale(0);
                 opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .payment-card {
+                padding: 25px;
+                margin: 0;
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .amount-display {
+                font-size: 30px;
+            }
+
+            .payment-method-tabs {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .payment-tab {
+                max-width: none;
+            }
+
+            .animated-container {
+                height: 120px;
+            }
+
+            .money-animation {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .payment-card {
+                padding: 30px;
+            }
+
+            .animated-container {
+                height: 120px;
+            }
+
+            .payment-icon {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 20px;
+            }
+
+            .payment-icon svg {
+                width: 35px;
+                height: 35px;
             }
         }
     </style>
@@ -354,27 +742,49 @@
     <h1>Finaliza tu Compra</h1>
     <p>Estás a un paso de completar tu transacción. Selecciona tu método de pago preferido.</p>
 
-    <div class="amount-display" th:switch="${cambio}">
-        $ <strong th:text="${monto}"></strong>
+    <div class="amount-display">
+        <span th:if="${moneda.equals('dolar')} or ${moneda.equals('USD')}">
+            $ <strong th:text="${totalDolares}"></strong> USD
+        </span>
+        <span th:if="${moneda.equals('euro')} or ${moneda.equals('EUR')}">
+            € <strong th:text="${totalEuros}"></strong> EUR
+        </span>
+        <span th:if="${moneda.equals('clp')} or ${moneda.equals('CLP')}">
+        $ <strong th:text="${monto}"></strong> CLP
+</span>
+
     </div>
 
-    <div class="international-check">
-        <input type="checkbox" id="internationalCheckbox">
-        <label for="internationalCheckbox">Esta es una compra internacional</label>
+    <div class="animated-container">
+        <div class="money-animation">💰</div>
+        <div class="money-animation">💵</div>
+        <div class="money-animation">💶</div>
     </div>
 
     <div class="payment-methods">
         <div class="payment-method-tabs">
-            <div class="payment-tab active" id="webpayTab" data-method="webpay">Webpay</div>
-            <div class="payment-tab" id="paypalTab" data-method="paypal">PayPal</div>
+            <div th:if="${moneda.equals('clp')} or ${moneda.equals('CLP')}"
+                 class="payment-tab active" id="webpayTab" data-method="webpay">
+                Webpay
+            </div>
+            <div th:if="${moneda.equals('dolar')} or ${moneda.equals('USD')}"
+                 class="payment-tab active" id="paypalTab" data-method="paypal">
+                PayPal
+            </div>
+            <div th:if="!(${moneda.equals('clp')} or ${moneda.equals('CLP')} or ${moneda.equals('dolar')} or ${moneda.equals('USD')})">
+                <!-- Si es otra moneda, mostrar ambos -->
+                <div class="payment-tab active" id="webpayTab" data-method="webpay">Webpay</div>
+                <div class="payment-tab" id="paypalTab" data-method="paypal">PayPal</div>
+            </div>
         </div>
 
         <!-- Formulario de Webpay -->
-        <div class="payment-form active" id="webpayForm">
+        <div th:if="${moneda.equals('clp')} or ${moneda.equals('CLP')}"
+             class="payment-form active" id="webpayForm">
             <div class="payment-logo webpay-logo">Webpay Plus</div>
             <form th:action="${token}" method="post">
                 <input type="hidden" name="token_ws" th:value="${urlPago}" />
-                <button class="payment-button" type="submit">
+                <button class="payment-button" type="submit" th:if="${moneda.equals('clp')} or ${moneda.equals('CLP')}">
                     <svg class="payment-icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#0075c9" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1z"/>
                         <circle fill="#00ab4e" cx="17" cy="18" r="4"/>
@@ -385,8 +795,9 @@
             </form>
         </div>
 
+
         <!-- Formulario de PayPal -->
-        <div class="payment-form" id="paypalForm">
+        <div class="payment-form active" id="paypalForm" th:if="${moneda.equals('dolar')} or ${moneda.equals('USD')}">
             <div class="payment-logo paypal-logo">
                 <span>Pay</span><span>Pal</span>
             </div>
@@ -416,6 +827,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         createPaymentParticles();
         initializePaymentMethods();
+        createFloatingElements();
     });
 
     function initializePaymentMethods() {
@@ -473,10 +885,10 @@
 
     function createPaymentParticles() {
         const container = document.getElementById('particles');
-        const symbols = ['$', '💳', '🔒', '✓'];
-        const colors = ['#0075c9', '#00ab4e', '#0070ba', '#333333'];
+        const symbols = ['$', '💳', '🔒', '✓', '💰', '💎', '⭐'];
+        const colors = ['#0075c9', '#00ab4e', '#0070ba', '#333333', '#ff9800', '#e91e63', '#9c27b0'];
 
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             setTimeout(() => {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
@@ -486,8 +898,8 @@
                 const size = Math.random() * 20 + 10;
                 const symbol = symbols[Math.floor(Math.random() * symbols.length)];
                 const color = colors[Math.floor(Math.random() * colors.length)];
-                const tx = (Math.random() - 0.5) * 200;
-                const ty = -window.innerHeight - 100 - Math.random() * 200;
+                const tx = (Math.random() - 0.5) * 250;
+                const ty = -window.innerHeight - 150 - Math.random() * 250;
 
                 particle.style.fontSize = `${size}px`;
                 particle.style.color = color;
@@ -501,9 +913,32 @@
 
                 setTimeout(() => {
                     particle.remove();
-                }, 3000);
-            }, Math.random() * 5000);
+                }, 4000);
+            }, Math.random() * 8000);
         }
+    }
+
+    function createFloatingElements() {
+        const container = document.getElementById('particles');
+        const shapes = ['🌟', '✨', '💫', '⚡', '🔥'];
+
+        setInterval(() => {
+            const element = document.createElement('div');
+            element.style.position = 'fixed';
+            element.style.fontSize = Math.random() * 16 + 12 + 'px';
+            element.style.left = Math.random() * window.innerWidth + 'px';
+            element.style.top = window.innerHeight + 'px';
+            element.style.pointerEvents = 'none';
+            element.style.zIndex = '-1';
+            element.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+            element.style.animation = `particleAnimation ${3 + Math.random() * 2}s ease-out forwards`;
+            element.style.setProperty('--tx', (Math.random() - 0.5) * 180 + 'px');
+            element.style.setProperty('--ty', -window.innerHeight - 80 + 'px');
+
+            container.appendChild(element);
+
+            setTimeout(() => element.remove(), 5000);
+        }, 2500);
     }
 </script>
 </body>

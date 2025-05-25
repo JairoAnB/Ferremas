@@ -1,10 +1,7 @@
 package com.proyects.ferremaspayment.service;
 
 import com.proyects.ferremaspayment.dto.*;
-import com.proyects.ferremaspayment.exceptions.StockNoSuficiente;
-import com.proyects.ferremaspayment.exceptions.UsuarioNoEncontrado;
-import com.proyects.ferremaspayment.exceptions.VentaNoCreada;
-import com.proyects.ferremaspayment.exceptions.VentaNoEncontrada;
+import com.proyects.ferremaspayment.exceptions.*;
 import com.proyects.ferremaspayment.mapper.DetalleVentaMapper;
 import com.proyects.ferremaspayment.mapper.VentaMapper;
 import com.proyects.ferremaspayment.model.DetalleVenta;
@@ -50,9 +47,20 @@ public class VentaService {
         //Instancio una nueva venta
         Venta venta = new Venta();
 
+        UsuarioRequestDto usuario = paymentClient.obtenerUsuario(ventaRequestDto.getUsuarioId());
+        if(usuario == null){
+            throw new UsuarioNoEncontrado("El usuario con id " + ventaRequestDto.getUsuarioId() + " no existe");
+        }
+
         //Recorro sobre cada producto de una venta especialmente en items donde solo hay id y cantidad
         Set<Long> ids = new HashSet<>(); //Genero un conjunto que solo permite valores unicos, si se intenta repetir el valor, no se acepta
         for(ItemVentaDto item : items){
+            //valido id
+            ProductoDto validacionProducto = paymentClient.validadProducto(item.getProductoId());
+
+            if(validacionProducto == null) {
+                throw new ProductoNoExiste("El producto con id " + item.getProductoId() + " no existe");
+            }
 
             if (!ids.add(item.getProductoId())) { //agrego el producto o la id, si ya existe, no se agrega
                 throw new StockNoSuficiente("El producto con id " + item.getProductoId() + " no puede repetirse");
@@ -94,10 +102,6 @@ public class VentaService {
         }
 
         //Asigno los detalles y el total a la entidad de la venta para guardarlo en la base de datos
-        UsuarioRequestDto usuario = paymentClient.obtenerUsuario(ventaRequestDto.getUsuarioId());
-        if(usuario == null){
-            throw new UsuarioNoEncontrado("El usuario con id " + ventaRequestDto.getUsuarioId() + " no existe");
-        }
 
         venta.setUsuarioId(ventaRequestDto.getUsuarioId());
         venta.setDetalle(detalles);
@@ -144,7 +148,9 @@ public class VentaService {
                 .orElseThrow(() -> new VentaNoEncontrada("La venta con la id " + id + " no existe, revisa la base de datos e intenta nuevamente"));
 
         VentaDto ventaDto = ventaMapper.ventaToDto(venta);
+        List<DetalleVentaDto> detalleVentaDto = detalleVentaMapper.toDtoList(venta.getDetalle());
 
+        ventaDto.setDetalle(detalleVentaDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ventaDto);

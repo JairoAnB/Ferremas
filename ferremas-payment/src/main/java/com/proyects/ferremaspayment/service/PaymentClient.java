@@ -113,6 +113,26 @@ public class PaymentClient {
         }
     }
 
+    public ProductoDto validadProducto(Long id){
+        String inventoryUrlProducts = "http://localhost:8082/api/v1/products/" + id;
+
+        try{
+
+            ResponseEntity<ProductoDto> response =
+                    restTemplate.getForEntity(inventoryUrlProducts, ProductoDto.class);
+
+            if(response.getStatusCode().is2xxSuccessful() && response.getBody() != null){
+
+                return response.getBody();
+            }else {
+                throw new ProductoNoExiste("El producto con la id " + id + " no existe");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ProductoNoObtenido("No se pudo obtener el producto con la id " + id);
+        }
+    }
+
     public CurrencyDto obtenerCambio(String moneda, String fecha){
 
         String currencyUrl = "https://mindicador.cl/api/" + moneda + "/" + fecha;

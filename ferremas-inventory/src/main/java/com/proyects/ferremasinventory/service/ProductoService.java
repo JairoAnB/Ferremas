@@ -135,6 +135,7 @@ public class ProductoService {
     public ResponseEntity<ProductoUpdateStockDto> updateStock(Long id, int stock){
         Producto productoExistente = productoRepository.findById(id)
                 .orElseThrow(() -> new ProductoNoEncontrado("El producto con la id " + id + " no existe"));
+
         try{
 
             //Actualizo el stock del producto
@@ -149,7 +150,7 @@ public class ProductoService {
                     .body(productoActualizado);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ProductoNoActualizado("El producto no fue actualizado correctamente");
         }
 
     }

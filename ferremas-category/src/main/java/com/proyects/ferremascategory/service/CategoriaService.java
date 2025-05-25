@@ -83,14 +83,14 @@ public class CategoriaService {
          return ResponseEntity.status(HttpStatus.CREATED)
                  .body("Categoria creada correctamente con id: " + categoriaDto.getId());
 
-         } catch (RuntimeException e) {
+         } catch (CategoriaNoCreada e) {
              throw new CategoriaNoCreada("La categoria no fue creada correctamente");
          }
 
     }
 
     @Transactional
-    public ResponseEntity<CategoriaDto> updateCategoria(Long id, CategoriaUpdateDto categoriaUpdateDto){
+    public ResponseEntity<String> updateCategoria(@Valid Long id, CategoriaUpdateDto categoriaUpdateDto){
         Categoria categoriaExistente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNoEncontrada("La categoria con la id " + id + " no existe"));
 
@@ -104,7 +104,7 @@ public class CategoriaService {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(categoriaDto);
+                .body("Categoria actualizada correctamente con id: " + categoriaDto.getId());
 
 
     }

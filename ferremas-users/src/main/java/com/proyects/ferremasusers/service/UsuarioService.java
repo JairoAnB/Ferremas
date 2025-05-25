@@ -127,7 +127,7 @@ public class UsuarioService {
     @Transactional
     public ResponseEntity<String> deleteUsuario(Long id){
         Usuario usuarioEntity = usuarioRespository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El usuario con la id " + id + " no existe"));
+                .orElseThrow(() -> new UsuarioNoEncontrado("El usuario con la id " + id + " no existe"));
 
         usuarioRespository.delete(usuarioEntity);
 

@@ -1,6 +1,7 @@
 package com.proyects.ferremaspayment.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ public class VentaRequestDto {
 
     @NotNull (message = "El id del usuario no puede ser nulo y tiene que estar registrado en la base de datos")
     private Long usuarioId;
+    @Valid
     @NotNull (message = "El id del carrito no puede ser nulo ")
     private List<ItemVentaDto> productos;
 

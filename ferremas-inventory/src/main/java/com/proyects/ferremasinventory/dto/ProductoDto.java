@@ -19,7 +19,7 @@ public class ProductoDto {
     //Notblank, NotNull son para validar los datos que se van a recibir
     //Hay que tener cuenta la redudancia entre las validaciones
 
-
+    private Long id;
     private String marca;
     private String codigo;
     private String nombre;

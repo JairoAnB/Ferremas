@@ -30,7 +30,7 @@ public class ProductoCreateDto {
 
     @NotNull @Min(value = 1, message = "El stock de bodega no puede ser inferior a 1") @Max(value = 9999, message = "El stock de bodega no puede ser mayor a 9999")
     @JsonProperty("stock_bodega")
-    private int StockBodega;
+    private int stockBodega;
 
     private String descripcion;
 

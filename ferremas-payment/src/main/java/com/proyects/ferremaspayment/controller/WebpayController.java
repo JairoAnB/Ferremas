@@ -6,6 +6,7 @@ import cl.transbank.common.IntegrationType;
 import cl.transbank.webpay.common.WebpayOptions;
 import cl.transbank.webpay.webpayplus.WebpayPlus;
 import cl.transbank.webpay.webpayplus.responses.WebpayPlusTransactionCommitResponse;
+import com.proyects.ferremaspayment.dto.CurrencyDto;
 import com.proyects.ferremaspayment.dto.TransaccionResponseDto;
 import com.proyects.ferremaspayment.dto.VentaDto;
 import com.proyects.ferremaspayment.exceptions.ErrorWebpayConfirmarPago;
@@ -24,12 +25,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
 
 @Controller
-public class VentaController {
+public class WebpayController {
 
 
     private final VentaService ventaService;
@@ -38,7 +41,7 @@ public class VentaController {
     private final PaymentClient paymentClient;
 
     @Autowired
-    public VentaController(VentaService ventaService, PaymentGateway paymentGateway, VentaRepository ventaRepository, PaymentClient paymentClient) {
+    public WebpayController(VentaService ventaService, PaymentGateway paymentGateway, VentaRepository ventaRepository, PaymentClient paymentClient) {
         this.ventaService = ventaService;
         this.paymentGateway = paymentGateway;
         this.ventaRepository = ventaRepository;
@@ -67,11 +70,31 @@ public class VentaController {
             DecimalFormat formato = new DecimalFormat("#,###");
             String montoFormateado = formato.format(amount);
 
+
+            //Conversos de divisas para las vistas
+
+            String moneda = ventaResponse.getMoneda();
+
+            if("dolar".equalsIgnoreCase(moneda)){
+                String fecha = "23-05-2025";
+                CurrencyDto cambio = paymentClient.obtenerCambio(moneda, fecha);
+
+                BigDecimal dolarValor = cambio.getSerie().get(0).getValor();
+                BigDecimal totalDolares = BigDecimal.valueOf(ventaResponse.getTotal()).divide(dolarValor, 2, RoundingMode.HALF_UP);
+                model.addAttribute("totalDolares", totalDolares);
+            } else if ("euro".equalsIgnoreCase(moneda)) {
+                String fecha = "23-05-2025";
+                CurrencyDto cambio = paymentClient.obtenerCambio(moneda, fecha);
+                BigDecimal euroValor = cambio.getSerie().get(0).getValor();
+                BigDecimal totalEuros = BigDecimal.valueOf(ventaResponse.getTotal()).divide(euroValor, 2, RoundingMode.HALF_UP);
+                model.addAttribute("totalEuros", totalEuros);
+            }
+
             model.addAttribute("urlPago", response.getUrl());
             model.addAttribute("token", response.getToken());
             model.addAttribute("monto", montoFormateado);
             model.addAttribute("ventaId", ventaResponse.getId());
-            model.addAttribute("cambio", ventaResponse.getMoneda());
+            model.addAttribute("moneda", ventaResponse.getMoneda());
 
             System.out.println(response.getUrl());
             System.out.println(response.getToken());

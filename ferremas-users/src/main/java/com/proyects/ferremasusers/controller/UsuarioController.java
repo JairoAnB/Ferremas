@@ -4,6 +4,7 @@ import com.proyects.ferremasusers.dto.UsuarioCreateDto;
 import com.proyects.ferremasusers.dto.UsuarioDto;
 import com.proyects.ferremasusers.dto.UsuarioUpdateDto;
 import com.proyects.ferremasusers.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,12 +35,12 @@ public class UsuarioController {
 
     @PostMapping("/create")
     //OBLIGATORIO LA ANOTACION DE REQUEST BODYYYYYYY!!
-    public ResponseEntity<UsuarioDto> createUsuario(@RequestBody UsuarioCreateDto usuarioCreateDto)  {
+    public ResponseEntity<UsuarioDto> createUsuario(@Valid @RequestBody UsuarioCreateDto usuarioCreateDto)  {
         return usuarioService.createUsuario(usuarioCreateDto);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUsuario(@PathVariable Long id, @RequestBody UsuarioUpdateDto usuarioUpdateDto) {
+    public ResponseEntity<String> updateUsuario(@PathVariable Long id,@Valid @RequestBody UsuarioUpdateDto usuarioUpdateDto) {
         return usuarioService.updateUsuario(id, usuarioUpdateDto);
     }
 

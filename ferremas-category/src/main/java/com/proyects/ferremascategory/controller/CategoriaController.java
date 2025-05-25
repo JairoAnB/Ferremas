@@ -4,6 +4,7 @@ import com.proyects.ferremascategory.dto.CategoriaCreateDto;
 import com.proyects.ferremascategory.dto.CategoriaDto;
 import com.proyects.ferremascategory.dto.CategoriaUpdateDto;
 import com.proyects.ferremascategory.service.CategoriaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,12 @@ public class CategoriaController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createCategoria(@RequestBody CategoriaCreateDto categoriaCreateDto) {
+    public ResponseEntity<String> createCategoria(@Valid @RequestBody CategoriaCreateDto categoriaCreateDto) {
         return categoriaService.createCategoria(categoriaCreateDto);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<CategoriaDto> updateCategoria(@PathVariable Long id, @RequestBody CategoriaUpdateDto categoriaUpdateDto) {
+    public ResponseEntity<String> updateCategoria(@PathVariable Long id, @Valid @RequestBody CategoriaUpdateDto categoriaUpdateDto) {
         return categoriaService.updateCategoria(id, categoriaUpdateDto);
     }
 

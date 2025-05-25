@@ -2,26 +2,167 @@
 
 FERREMAS es un proyecto semestral desarrollado para la asignatura **Integración de Plataformas**. Este sistema simula la solución tecnológica de una red de ferreterías con múltiples sucursales físicas, enfocándose principalmente en la integración de plataformas mediante **APIs RESTful** construidas en **Java con Spring Boot**.
 
-## :dart: Contexto
-
-Esta entrega corresponde al **Paso 2** del proyecto semestral, parte de una evaluación grupal, se construyó una **API RESTful** que permite consultar información detallada de productos, como nombre, código, marca, precio, stock y categoría. Esta API tiene un enfoque de doble integración:
-
-- :arrows_counterclockwise: **Consumo interno**: Para que las sucursales puedan consultar el catálogo y realizar pedidos.
-- :globe_with_meridians: **Consumo externo**: Para que otras tiendas o desarrolladores externos puedan integrarse fácilmente.
-
-> :bulb: Además, se proyecta a futuro integrar pagos con **Webpay** y una conversión de divisas en tiempo real con la **API del Banco Central de Chile**.
-
----
-
 ## :toolbox: Tecnologías utilizadas
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| ![Spring Boot](https://img.shields.io/badge/SpringBoot-3.2.x-brightgreen?logo=spring-boot) | Framework principal para el backend |
+| ![Spring Boot](https://img.shields.io/badge/SpringBoot-3.5.x-brightgreen?logo=spring-boot) | Framework principal para el backend |
 | ![Java](https://img.shields.io/badge/Java-21-blue?logo=openjdk) | Lenguaje utilizado |
 | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?logo=postgresql) | Base de datos relacional |
-| ![Lombok](https://img.shields.io/badge/Lombok-%E2%9C%93-yellow) | Anotaciones para simplificar el código |
 | ![Postman](https://img.shields.io/badge/Postman-API%20Testing-orange?logo=postman) | Herramienta para probar las APIs |
-| Maven | Sistema de gestión de dependencias |
 
 ---
+# 📦 Microservicio de Categorías
+
+Este microservicio forma parte de un sistema distribuido basado en microservicios para la gestión de productos. Su responsabilidad principal es manejar la información relacionada a las **categorías**, las cuales son indispensables para la creación y clasificación de productos dentro del sistema.
+
+Este proyecto sigue los principios de **separación de responsabilidades**, **escalabilidad** y **autonomía de servicios**, permitiendo que cada microservicio opere de forma independiente y con su propia lógica de negocio.
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+| Tecnología  | Descripción                         |
+|-------------|-------------------------------------|
+| Java        | Lenguaje de programación principal  |
+| Spring Boot | Framework para desarrollo de APIs   |
+| PostgreSQL  | Base de datos relacional            |
+| Postman     | Herramienta para pruebas de endpoints|
+
+---
+
+## 🌐 Endpoint base
+
+```
+http://localhost:808x/api/v1/categories
+```
+
+---
+
+## 📌 Endpoints disponibles
+
+### 🔹 GET /  
+Obtiene todas las categorías registradas.
+
+- **Sin categorías existentes**  
+  - Respuesta: `[]`  
+  - Código HTTP: `204 No Content`
+
+- **Con categorías registradas**  
+  - Ejemplo de respuesta:
+    ```json
+    [
+      {
+        "id": 1,
+        "nombre": "Electronicos",
+        "descripcion": "productos Electronicos varios, taladros, etc",
+        "imagen": "http://imagen.png"
+      }
+    ]
+    ```
+  - Código HTTP: `200 OK`
+
+---
+
+### 🔹 GET /{id}  
+Obtiene una categoría específica por ID.
+
+- **Si no se encuentra la categoría**:
+  ```json
+  {
+    "message": "La categoria con la id 1 no existe",
+    "error": "La categoria no fue encontrada, revise la id e intente nuevamente"
+  }
+  ```
+  - Código HTTP: `404 Not Found`
+
+- **Si se encuentra la categoría**:
+  ```json
+  {
+    "id": 1,
+    "nombre": "Electronicos",
+    "descripcion": "productos Electronicos varios, taladros, etc",
+    "imagen": "1"
+  }
+  ```
+  - Código HTTP: `200 OK`
+
+---
+
+### 🔹 POST /create  
+Crea una nueva categoría.
+
+- **Request Body**:
+  ```json
+  {
+    "nombre": "Electronicos",
+    "descripcion": "productos varios",
+    "imagen": "http://imagen.png" // opcional
+  }
+  ```
+
+- **Respuesta esperada**:
+  - Mensaje: `"Categoria creada correctamente con id: X"`
+  - Código HTTP: `201 Created`
+
+- **Errores posibles**:
+  - Nombre duplicado:  
+    - Código: `409 Conflict`
+  - Campos faltantes o inválidos:  
+    - Mensaje: `"El campo ... no puede ser nulo"`  
+    - Código: `400 Bad Request`
+
+---
+
+### 🔹 PUT /update/{id}  
+Actualiza una categoría existente.
+
+- **Request Body**:
+  ```json
+  {
+    "nombre": "Nuevo nombre",
+    "descripcion": "Nueva descripción",
+    "imagen": "http://nueva-imagen.png" // opcional
+  }
+  ```
+
+- **Errores comunes**:
+  ```json
+  {
+    "descripcion": "La descripcion no puede estar vacía",
+    "nombre": "El nombre no puede estar vacío"
+  }
+  ```
+  - Código HTTP: `400 Bad Request`
+
+- **Respuesta exitosa**:
+  - Mensaje: `"Categoria actualizada correctamente con id: X"`
+  - Código HTTP: `200 OK`
+
+---
+
+### 🔹 DELETE /delete/{id}  
+Elimina una categoría por su ID.
+
+- **Si la ID no existe**:
+  ```json
+  {
+    "message": "La categoria con la id 4 no existe",
+    "error": "La categoria no fue encontrada, revise la id e intente nuevamente"
+  }
+  ```
+  - Código HTTP: `404 Not Found`
+
+- **Si la categoría se elimina correctamente**:
+  - Mensaje: `"La categoria con la id 1 fue eliminada correctamente"`
+  - Código HTTP: `200 OK`
+
+---
+
+## ⚠️ Consideraciones
+
+- No se permiten categorías con **nombres duplicados**.
+- Los campos `nombre` y `descripcion` son obligatorios tanto al crear como al actualizar.
+- El campo `imagen` es opcional.
+- Cada microservicio debe tener su propia responsabilidad y control de errores.
+

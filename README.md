@@ -20,17 +20,6 @@ Este proyecto sigue los principios de **separación de responsabilidades**, **es
 
 ---
 
-## 🛠️ Tecnologías utilizadas
-
-| Tecnología  | Descripción                         |
-|-------------|-------------------------------------|
-| Java        | Lenguaje de programación principal  |
-| Spring Boot | Framework para desarrollo de APIs   |
-| PostgreSQL  | Base de datos relacional            |
-| Postman     | Herramienta para pruebas de endpoints|
-
----
-
 ## 🌐 Endpoint base
 
 ```

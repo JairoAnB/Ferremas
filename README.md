@@ -123,7 +123,7 @@ Obtiene una categoría específica por ID.
     "id": 1,
     "nombre": "Electronicos",
     "descripcion": "productos Electronicos varios, taladros, etc",
-    "imagen": "1"
+    "imagen": "http://imagen.png"
   }
   ```
   - Código HTTP: `200 OK`
@@ -138,12 +138,19 @@ Crea una nueva categoría.
   {
     "nombre": "Electronicos",
     "descripcion": "productos varios",
-    "imagen": "http://imagen.png" // opcional
+    "imagen": "http://imagen.png"
   }
   ```
 
-- **Respuesta esperada**:
-  - Mensaje: `"Categoria creada correctamente con id: X"`
+- **Respuesta exitosa**:
+  ```json
+  {
+    "id": 1,
+    "message": "Categoría creada correctamente",
+    "status": "CREATED",
+    "timestamp": "2025-05-25T14:30:16.4348998"
+  }
+  ```
   - Código HTTP: `201 Created`
 
 - **Errores posibles**:
@@ -163,7 +170,7 @@ Actualiza una categoría existente.
   {
     "nombre": "Nuevo nombre",
     "descripcion": "Nueva descripción",
-    "imagen": "http://nueva-imagen.png" // opcional
+    "imagen": "http://nueva-imagen.png"
   }
   ```
 
@@ -177,7 +184,14 @@ Actualiza una categoría existente.
   - Código HTTP: `400 Bad Request`
 
 - **Respuesta exitosa**:
-  - Mensaje: `"Categoria actualizada correctamente con id: X"`
+  ```json
+  {
+    "id": 1,
+    "message": "Categoría actualizada correctamente",
+    "status": "OK",
+    "timestamp": "2025-05-25T14:35:52.7355675"
+  }
+  ```
   - Código HTTP: `200 OK`
 
 ---
@@ -195,7 +209,14 @@ Elimina una categoría por su ID.
   - Código HTTP: `404 Not Found`
 
 - **Si la categoría se elimina correctamente**:
-  - Mensaje: `"La categoria con la id 1 fue eliminada correctamente"`
+  ```json
+  {
+    "id": 1,
+    "message": "Categoría eliminada correctamente",
+    "status": "OK",
+    "timestamp": "2025-05-25T14:36:16.9542405"
+  }
+  ```
   - Código HTTP: `200 OK`
 
 ---
@@ -209,7 +230,8 @@ Elimina una categoría por su ID.
 
 ---
 
-# Microservicio de Usuarios
+
+# 👤 Microservicio de Usuarios
 
 Este microservicio tiene como propósito principal la gestión básica de usuarios dentro del sistema. Su diseño contempla una mínima validación de datos y administración de roles, lo que permitirá futuras expansiones como autenticación o control de acceso por perfiles. Forma parte de un ecosistema de microservicios independientes, donde cada uno cumple una función específica.
 
@@ -229,7 +251,6 @@ Este microservicio tiene como propósito principal la gestión básica de usuari
 - **URL**: `http://localhost:808x/api/v1/users/{id}`
 - **Header**: (Obligatorio) `Long id` válido
 - **Respuesta exitosa**:
-
 ```json
 {
   "id": 1,
@@ -242,7 +263,6 @@ Este microservicio tiene como propósito principal la gestión básica de usuari
 - **Código**: `200 OK`
 
 - **Respuesta con ID inválido**:
-
 ```json
 {
   "message": "El usuario con la id 2 no existe",
@@ -257,20 +277,22 @@ Este microservicio tiene como propósito principal la gestión básica de usuari
 
 - **URL**: `http://localhost:808x/api/v1/users/create`
 - **Body requerido**:
-  - `nombre` (String)
-  - `apellido` (String)
-  - `email` (String)
-  - `password` (String)
-  - `rol` (String) → debe ser uno de: `ADMINISTRADOR`, `USUARIO`, `CLIENTE` (en mayúsculas)
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "email": "juan.perez@example.com",
+  "password": "Password123",
+  "rol": "USUARIO"
+}
+```
 - **Respuesta esperada**:
-
 ```json
 {
   "id": 1,
-  "nombre": "jairo",
-  "apellido": "gonzalez",
-  "email": "jair.gonzalez@duocuc.cl",
-  "rol": "USUARIO"
+  "message": "El usuario fue creado correctamente",
+  "status": "CREATED",
+  "timestamp": "2025-05-25T14:30:21.5715504"
 }
 ```
 - **Código**: `201 Created`
@@ -287,7 +309,15 @@ Este microservicio tiene como propósito principal la gestión básica de usuari
 - **URL**: `http://localhost:808x/api/v1/users/update/{id}`
 - **Header**: `Long id` válido
 - **Body requerido**: igual que POST
-- **Respuesta esperada**: `Usuario actualizado correctamente`
+- **Respuesta esperada**:
+```json
+{
+  "id": 1,
+  "message": "El usuario fue actualizado correctamente",
+  "status": "OK",
+  "timestamp": "2025-05-25T14:37:38.8463549"
+}
+```
 - **Código**: `200 OK`
 
 - **Errores posibles**:
@@ -300,11 +330,18 @@ Este microservicio tiene como propósito principal la gestión básica de usuari
 
 - **URL**: `http://localhost:808x/api/v1/users/delete/{id}`
 - **Header**: `Long id` válido
-- **Respuesta esperada**: `El usuario fue eliminado correctamente`
+- **Respuesta esperada**:
+```json
+{
+  "id": 1,
+  "message": "El usuario fue eliminado correctamente",
+  "status": "OK",
+  "timestamp": "2025-05-25T14:38:01.7647599"
+}
+```
 - **Código**: `200 OK`
 
 - **Respuesta con ID inválido**:
-
 ```json
 {
   "message": "El usuario con la id 3 no existe",
@@ -371,7 +408,14 @@ Este microservicio es uno de los **componentes principales** del sistema, encarg
 
 ### 🔹 POST /products/create
 - **Campos requeridos**: código, nombre, precio, stock, stock_bodega, descripción, categoria_id
-- **Respuesta exitosa**: `201 Created`
+- **Respuesta exitosa**: `
+   {
+    "id": X,
+    "message": "El producto fue creado correctamente",
+    "status": "CREATED",
+    "timestamp": "2025-05-25T14:30:37.3656289"
+}
+  `
 - **Errores**:
 ```json
 {
@@ -394,8 +438,15 @@ Este microservicio es uno de los **componentes principales** del sistema, encarg
 > ⚠️ **Importante:** Debes crear una categoría previamente en el microservicio de categorías.
 
 ### 🔹 PUT /products/update/{id}
-- **Campos requeridos**: mismos que en POST
-- **Respuesta exitosa**: `200 OK`
+- **Campos requeridos**: mismos que en POST y agregar la fecha de creacion del producto.
+- **Respuesta exitosa**: `
+   {
+    "id": 1,
+    "message": "El producto fue actualizado correctamente",
+    "status": "OK",
+    "timestamp": "2025-05-25T14:39:45.1054352"
+}
+  `
 - **Errores**: igual que en POST → `400 Bad Request`
 
 ### 🔹 PUT /products/stock/{id}/update/{stock}
@@ -405,7 +456,14 @@ Este microservicio es uno de los **componentes principales** del sistema, encarg
   - Stock no proporcionado → `404`
 
 ### 🔹 DELETE /products/delete/{id}
-- **Respuesta exitosa**: `"El producto fue eliminado correctamente"` → `200 OK`
+- **Respuesta exitosa**: `
+- {
+    "id": 1,
+    "message": "El producto fue eliminado correctamente",
+    "status": "OK",
+    "timestamp": "2025-05-25T14:40:35.0742255"
+}
+  ` → `200 OK`
 - **Error**:
 ```json
 {
@@ -473,8 +531,8 @@ Este microservicio es uno de los **componentes principales** del sistema, encarg
 1. Inicia el microservicio de **categorías** y crea una categoría.
 2. Inicia el microservicio de **inventario** y crea los productos asociándolos a la categoría.
 3. Verifica stock, transfiere desde bodega, y actualiza según sea necesario.
-
 ---
+
 # 📦 Microservicio de Ventas
 
 El microservicio de **ventas** es el núcleo del sistema, ya que coordina la interacción entre todos los demás microservicios (usuarios, inventario, pagos). Es importante leer cuidadosamente esta documentación antes de consumir o probar esta API.
@@ -524,10 +582,14 @@ Crea una nueva venta.
 ### Respuesta Exitosa
 
 ```json
-Venta creada correctamente, para continuar con el pago dirigete a la URL:
-http://localhost:8085/pago?id=1
+{
+    "id": 1,
+    "message": "Venta creada correctamente, dirigete a localhost:8085/pago?id=1 para realizar el pago",
+    "status": "CREATED",
+    "timestamp": "2025-05-25T14:33:43.9814683"
+}
 ```
-- 🔁 El fragmento `/pago?id=1` siempre se mantiene, lo que cambia es el puerto.
+- 🔁 El fragmento `/pago?id=1` siempre se mantiene, lo que cambia es el puerto y la id, aunque es dinamica.
 
 ### Códigos de estado
 

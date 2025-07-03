@@ -40,6 +40,10 @@ public class UsuarioService {
             return false;
         }
 
+        if (!password.matches(".*[a-z].*")) {
+            return false;
+        }
+
         if (!password.matches(".*\\d.*")) {
             return false;
         }

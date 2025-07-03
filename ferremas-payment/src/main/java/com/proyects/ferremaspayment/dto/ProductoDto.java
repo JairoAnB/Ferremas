@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ProductoDto {
 
+    private Long id;
     private String marca;
     private String codigo;
     private String nombre;
